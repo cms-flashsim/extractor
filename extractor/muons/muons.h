@@ -33,7 +33,7 @@ auto Mclosest_jet_dr(ROOT::VecOps::RVec<float> &etaj,
         closest = dr;
       }
     }
-    if (closest < 0.4) {
+    if (closest < 1) {
       distances[i] = closest;
     }
   }
@@ -179,7 +179,7 @@ auto match_reco_to_gen(ROOT::VecOps::RVec<int> &Muon_genPartIdx // Muon_genPartI
   for (size_t i = 0; i < size; i++) {
     indexes[i] = -1;
     curr_index = Muon_genPartIdx[i];
-    if (curr_index >= 0) & ((GenPart_statusFlags[curr_index] & 8192) = 0)
+    if (curr_index >= 0) && ((GenPart_statusFlags[curr_index] & 8192) = 0)
       indexes[i] = curr_index;
                       }
     return indexes;

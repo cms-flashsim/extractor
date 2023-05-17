@@ -80,23 +80,23 @@ def extractAllMuonFeatures(df):
         .Define("MGenPart_statusFlags13", "MBitwiseDecoder(MGenPart_statusFlags, 13)")
         .Define("MGenPart_statusFlags14", "MBitwiseDecoder(MGenPart_statusFlags, 14)")
         .Define(
-            "MClosestJet_dr",
+            "ClosestJet_dr",
             "Mclosest_jet_dr(CleanGenJet_eta, CleanGenJet_phi, MGenMuon_eta, MGenMuon_phi)",
         )
         .Define(
-            "MClosestJet_deta",
+            "ClosestJet_deta",
             "Mclosest_jet_deta(CleanGenJet_eta, CleanGenJet_phi, MGenMuon_eta, MGenMuon_phi)",
         )
         .Define(
-            "MClosestJet_dphi",
+            "ClosestJet_dphi",
             "Mclosest_jet_dphi(CleanGenJet_eta, CleanGenJet_phi, MGenMuon_eta, MGenMuon_phi)",
         )
         .Define(
-            "MClosestJet_pt",
+            "ClosestJet_pt",
             "Mclosest_jet_pt(CleanGenJet_eta, CleanGenJet_phi, MGenMuon_eta, MGenMuon_phi, CleanGenJet_pt)",
         )
         .Define(
-            "MClosestJet_mass",
+            "ClosestJet_mass",
             "Mclosest_jet_mass(CleanGenJet_eta, CleanGenJet_phi, MGenMuon_eta, MGenMuon_phi, CleanGenJet_mass)",
         )
         .Define(
@@ -154,6 +154,7 @@ def extractAllMuonFeatures(df):
         .Define("MMuon_softId", "Muon_softId[MuonMask]")
         .Define("MMuon_softMva", "Muon_softMva[MuonMask]")
         .Define("MMuon_softMvaId", "Muon_softMvaId[MuonMask]")
+        .Define("MMuon_charge", "Muon_charge[MuonMask]")
     )
     return extracted
 

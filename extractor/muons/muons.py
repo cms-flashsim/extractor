@@ -5,6 +5,7 @@ module_path = os.path.join(os.path.dirname(__file__), "muons.h")
 
 ROOT.gInterpreter.ProcessLine(f'#include "{module_path}"')
 
+
 def jet_cleaning(d):
     cleaned = (
         d.Define("TMPGenElectronMask", "abs(GenPart_pdgId) == 11")
@@ -40,7 +41,8 @@ def jet_cleaning(d):
 
     return cleaned
 
-def extractGenMuonFeatures(df):
+
+def extractAllMuonFeatures(df):
     """for getting genmuon, recomuon and cleaned genjet features
 
     Args:
@@ -154,3 +156,10 @@ def extractGenMuonFeatures(df):
         .Define("MMuon_softMvaId", "Muon_softMvaId[MuonMask]")
     )
     return extracted
+
+
+def extract_muons(df):
+    df = jet_cleaning(df)
+    df = extractAllMuonFeatures(df)
+
+    return df

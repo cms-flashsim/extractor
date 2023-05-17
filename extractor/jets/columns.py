@@ -57,7 +57,6 @@ jet_names = [
     "neEmEF",
     "neHEF",
     "partonFlavour",
-    "phifiltered",
     "phiMinusGen",
     "ptRatio",
     "puId",

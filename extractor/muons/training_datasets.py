@@ -1,5 +1,5 @@
 import os
-from extractor.preprocessing import make_dataset
+from extractor.preprocessing.preprocessing import make_dataset
 from prep_actions import target_dictionary_muons as target_dictionary
 from columns import muon_cond, reco_columns
 

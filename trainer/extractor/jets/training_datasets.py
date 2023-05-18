@@ -1,5 +1,5 @@
 import os
-from extractor.preprocessing.preprocessing import make_dataset
+from trainer.extractor.preprocessing.preprocessing import make_dataset
 from prep_actions import target_dictionary_jets as target_dictionary
 from columns import jet_cond, reco_columns
 

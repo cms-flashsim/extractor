@@ -38,9 +38,8 @@ target_dictionary = {
     "puId": [["upu"]],
 }
 
-kinematics_dictionary = {
-    "etaMinusGen": [["a", "GenJet_eta"]],
-    "ptRatio": [["m", "GenJet_pt"]],
-    "phiMinusGen": [["a", "GenJet_phi"], ["pmp"]],
-    "massRatio": [["m", "GenJet_mass"]],
-}
+# overwrite the dict adding Jet_ prefix
+target_dictionary_jets = {}
+for key, value in target_dictionary.items():
+    target_dictionary_jets["Jet_" + key] = value
+

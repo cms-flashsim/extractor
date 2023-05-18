@@ -67,11 +67,3 @@ jet_names = [
 
 reco_columns = [f"MJet_{name}" for name in jet_names]
 
-# NOTE we are calling the ratio/minus variables with the same name as the original
-# for i, name in enumerate(reco_columns):
-#     if name == "MElectron_pt":
-#         reco_columns[i] = "MElectron_ptRatio"
-#     elif name == "MElectron_phi":
-#         reco_columns[i] = "MElectron_phiMinusGen"
-#     elif name == "MElectron_eta":
-#         reco_columns[i] = "MElectron_etaMinusGen"

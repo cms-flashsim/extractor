@@ -223,5 +223,6 @@ def postprocessing(
         df[column_name] = process_column_var(
             column_name, operation, df, gen_df, saturate_ranges_path
         )
+        df[column_name] = saturate_on_full(df, column_name, saturate_ranges_path)
 
     return df

@@ -1,5 +1,9 @@
 import os
-from trainer.extractor.preprocessing.preprocessing import make_dataset
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "preprocessing)"))
+
+from preprocessing import make_dataset
 from prep_actions import target_dictionary_jets as target_dictionary
 from columns import jet_cond, reco_columns
 

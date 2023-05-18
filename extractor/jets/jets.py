@@ -1,12 +1,14 @@
 import os
 import ROOT
 
+from columns import jet_cond, reco_columns
+
 module_path = os.path.join(os.path.dirname(__file__), "jets.h")
 
 ROOT.gInterpreter.ProcessLine(f'#include "{module_path}"')
 
 
-def extractGenJetFeatures(df):
+def extractJetFeatures(df):
     """for going from GenJet to reco jet
 
     Args:
@@ -16,8 +18,7 @@ def extractGenJetFeatures(df):
         rdataframe: rdataframe with new features
     """
     extracted = (
-        df
-        .Define("JetMask", "Jet_genJetIdx >=0  && Jet_genJetIdx < nGenJet")
+        df.Define("JetMask", "Jet_genJetIdx >=0  && Jet_genJetIdx < nGenJet")
         .Define("MatchedGenJets", "Jet_genJetIdx[JetMask]")
         .Define(
             "MuonMaskJ",
@@ -30,7 +31,9 @@ def extractGenJetFeatures(df):
         .Define("MGenJet_eta", "Take(GenJet_eta, MatchedGenJets)")
         .Define("MGenJet_phi", "Take(GenJet_phi, MatchedGenJets)")
         .Define("MGenJet_mass", "Take(GenJet_mass, MatchedGenJets)")
-        .Define("MGenJet_hadronFlavourUChar", "Take(GenJet_hadronFlavour, MatchedGenJets)")
+        .Define(
+            "MGenJet_hadronFlavourUChar", "Take(GenJet_hadronFlavour, MatchedGenJets)"
+        )
         .Define(
             "MGenJet_hadronFlavour",
             "static_cast<ROOT::VecOps::RVec<int>>(MGenJet_hadronFlavourUChar)",
@@ -105,19 +108,19 @@ def extractGenJetFeatures(df):
         .Define("MJet_bRegRes", "Jet_bRegRes[JetMask]")
         .Define("MJet_btagCSVV2", "Jet_btagCSVV2[JetMask]")
         .Define("MJet_btagDeepB", "Jet_btagDeepB[JetMask]")
-        .Define("MJet_btagDeepCvB", "Jet_btagDeepCvB[JetMask]") # was DeepC
+        .Define("MJet_btagDeepCvB", "Jet_btagDeepCvB[JetMask]")  # was DeepC
         .Define("MJet_btagDeepCvL", "Jet_btagDeepCvL[JetMask]")
         .Define("MJet_btagDeepFlavB", "Jet_btagDeepFlavB[JetMask]")
-        .Define("MJet_btagDeepFlavCvB", "Jet_btagDeepFlavCvB[JetMask]") # was FlavC
+        .Define("MJet_btagDeepFlavCvB", "Jet_btagDeepFlavCvB[JetMask]")  # was FlavC
         .Define("MJet_btagDeepFlavCvL", "Jet_btagDeepFlavCvL[JetMask]")
         .Define("MJet_btagDeepFlavQG", "Jet_btagDeepFlavQG[JetMask]")
         .Define("MJet_cRegCorr", "Jet_cRegCorr[JetMask]")
         .Define("MJet_cRegRes", "Jet_cRegRes[JetMask]")
         .Define("MJet_chEmEF", "Jet_chEmEF[JetMask]")
-        .Define("MJet_chFPV0EF", "Jet_chFPV0EF[JetMask]")		
-        .Define("MJet_chHEF", "Jet_chHEF[JetMask]")			
-        .Define("MJet_cleanmask", "Jet_cleanmask[JetMask]")			
-        .Define("MJet_etaMinusGen", "Jet_eta[JetMask]-MGenJet_eta")			
+        .Define("MJet_chFPV0EF", "Jet_chFPV0EF[JetMask]")
+        .Define("MJet_chHEF", "Jet_chHEF[JetMask]")
+        .Define("MJet_cleanmask", "Jet_cleanmask[JetMask]")
+        .Define("MJet_etaMinusGen", "Jet_eta[JetMask]-MGenJet_eta")
         .Define("MJet_hadronFlavour", "Jet_hadronFlavour[JetMask]")
         .Define("MJet_hfadjacentEtaStripsSize", "Jet_hfadjacentEtaStripsSize[JetMask]")
         .Define("MJet_hfcentralEtaStripSize", "Jet_hfcentralEtaStripSize[JetMask]")
@@ -143,3 +146,26 @@ def extractGenJetFeatures(df):
     )
 
     return extracted
+
+
+def extract_jets(inputname, outputname, dict):
+    ROOT.EnableImplicitMT()
+
+    print(f"Processing {inputname}...")
+
+    d = ROOT.RDataFrame("Events", inputname)
+
+    d = extractJetFeatures(d)
+
+    n_match, n_reco = dict["RECOJET_GENJET"]
+
+    n_match += d.Histo1D("MJet_ptRatio").GetEntries()
+    n_reco += d.Histo1D("Jet_pt").GetEntries()
+
+    dict["RECOJET_GENJET"] = (n_match, n_reco)
+
+    cols = jet_cond + reco_columns
+
+    d.Snapshot("MJets", outputname, cols)
+
+    print(f"{outputname} written")

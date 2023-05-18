@@ -21,10 +21,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "utils"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "extractor"))
 
 from postprocessing import postprocessing
-from post_actions_ele import target_dictionary
-from corner_plots import make_corner
+from post_actions import target_dictionary
+from utils.corner_plots import make_corner
 
-from trainer.extractor.jets.columns import jet_cond, jet_names
+from extractor.jets.columns import jet_cond, jet_names
 
 
 def validate(

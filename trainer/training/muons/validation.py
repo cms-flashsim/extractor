@@ -21,10 +21,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "utils"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "extractor"))
 
 from postprocessing import postprocessing
-from post_actions_ele import target_dictionary
-from corner_plots import make_corner
+from post_actions import target_dictionary
+from utils.corner_plots import make_corner
 
-from trainer.extractor.jets.columns import jet_cond, jet_names
+from extractor.muons.columns import muon_cond, muon_names
 
 
 def validate(
@@ -73,7 +73,7 @@ def validate(
     print(f"Average objs/sec: {np.mean(np.array(times))}")
 
     # Fix cols names to remove M at beginning
-    reco_columns = ["Jet_"+x for x in jet_names]
+    reco_columns = ["Jet_"+x for x in muon_names]
     # Making DataFrames
 
     gen = np.array(gen).reshape((-1, args.y_dim))
@@ -81,13 +81,13 @@ def validate(
     samples = np.array(samples).reshape((-1, args.zdim))
 
     fullarray = np.concatenate((gen, reco, samples), axis=1)
-    full_sim_cols = ["FullSJet_"+x for x in jet_names]
-    full_df = pd.DataFrame(data=fullarray, columns=jet_cond + full_sim_cols + reco_columns)
+    full_sim_cols = ["FullSJet_"+x for x in muon_names]
+    full_df = pd.DataFrame(data=fullarray, columns=muon_cond + full_sim_cols + reco_columns)
     full_df.to_pickle(os.path.join(save_dir, "./full_muon_df.pkl"))
 
     # optionally you can read full_df from pickle and skip the previous steps
-    # full_df = pd.read_pickle("./full_jet_df.pkl") # please provide column names
-    gen = pd.DataFrame(data=full_df[jet_cond].values, columns=jet_cond)
+    # full_df = pd.read_pickle("./full_muon_df.pkl") # please provide column names
+    gen = pd.DataFrame(data=full_df[muon_cond].values, columns=muon_cond)
     reco = pd.DataFrame(data=full_df[full_sim_cols].values, columns=reco_columns)
     samples = pd.DataFrame(data=full_df[reco_columns].values, columns=reco_columns)
 

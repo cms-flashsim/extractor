@@ -235,7 +235,7 @@ def preprocessing(df, vars_dictionary, scale_factor_name, range_name):
 
 
 def make_dataset(
-    files, outname, target_dictionary, scale_factors_name, gen_cols, reco_cols
+    files, outname, target_dictionary, scale_factors_name, range_name, gen_cols, reco_cols
 ):
     """
     Makes dataset from given files and saves it to outname
@@ -250,7 +250,7 @@ def make_dataset(
         df = pd.concat([df, dataset(tree, cols)], axis=0)
         df.reset_index(drop=True)
 
-    df = preprocessing(df, target_dictionary, scale_factors_name)
+    df = preprocessing(df, target_dictionary, scale_factors_name, range_name)
 
     print(df.columns)
     file = h5py.File(f"{outname}.hdf5", "w")

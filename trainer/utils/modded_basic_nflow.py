@@ -738,7 +738,8 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs, transform_typ
                 init_identity=base_kwargs["init_identity"],
             )
         )
-        transform.append(create_random_transform(param_dim=input_dim))
+        if base_kwargs["permute_type"] != "no-permutation":
+            transform.append(create_random_transform(param_dim=input_dim))
 
     for _ in range(base_kwargs["num_steps_arqs"]):
         transform.append(
@@ -756,7 +757,8 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs, transform_typ
                 init_identity=base_kwargs["init_identity"],
             )
         )
-        transform.append(create_random_transform(param_dim=input_dim))
+        if base_kwargs["permute_type"] != "no-permutation":
+            transform.append(create_random_transform(param_dim=input_dim))
 
     for i in range(base_kwargs["num_steps_caf"]):
         transform.append(
@@ -776,7 +778,8 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs, transform_typ
                 ),
             )
         )
-        transform.append(create_random_transform(param_dim=input_dim))
+        if base_kwargs["permute_type"] != "no-permutation":
+            transform.append(create_random_transform(param_dim=input_dim))
 
     transform_fnal = transforms.CompositeTransform(transform)
 

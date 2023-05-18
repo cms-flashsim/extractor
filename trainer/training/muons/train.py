@@ -339,7 +339,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             if epoch % args.save_freq == 0:
                 save_model(
                     epoch,
-                    model,
+                    ddp_model,
                     scheduler,
                     train_history,
                     test_history,

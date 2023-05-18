@@ -10,9 +10,6 @@ import nflows.nn.nets as nn_
 
 from pathlib import Path
 
-from masks import create_block_binary_mask, create_identity_mask
-from permutations import BlockPermutation, IdentityPermutation
-
 from nflows.transforms.base import Transform
 from nflows.transforms.autoregressive import AutoregressiveTransform
 from nflows.transforms import made as made_module
@@ -446,37 +443,6 @@ def create_random_transform(param_dim):
     )
 
 
-def create_block_transform(param_dim, block_size):
-    """Create the composite block transform PLU.
-    Arguments:
-        input_dim {int} -- dimension of the space
-    Returns:
-        Transform -- nde.Transform object
-    """
-
-    return transforms.CompositeTransform(
-        [
-            BlockPermutation(features=param_dim, block_size=block_size),
-            transforms.LULinear(param_dim, identity_init=True),
-        ]
-    )
-
-
-def create_identity_transform(param_dim):
-    """Create the composite block transform PLU.
-    Arguments:
-        input_dim {int} -- dimension of the space
-    Returns:
-        Transform -- nde.Transform object
-    """
-    return transforms.CompositeTransform(
-        [
-            IdentityPermutation(features=param_dim),
-            transforms.LULinear(param_dim, identity_init=True),
-        ]
-    )
-
-
 def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
     """Build NSF (neural spline flow) model. This uses the nsf module
     available at https://github.com/bayesiains/nsf.
@@ -510,7 +476,8 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                 init_identity=base_kwargs["init_identity"],
             )
         )
-        transform.append(create_random_transform(param_dim=input_dim))
+        if base_kwargs["permute_type"] != "no-permutation":
+            transform.append(create_random_transform(param_dim=input_dim))
 
     for _ in range(base_kwargs["num_steps_arqs"]):
         transform.append(
@@ -528,7 +495,8 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                 init_identity=base_kwargs["init_identity"],
             )
         )
-        transform.append(create_random_transform(param_dim=input_dim))
+        if base_kwargs["permute_type"] != "no-permutation":
+            transform.append(create_random_transform(param_dim=input_dim))
 
     for i in range(base_kwargs["num_steps_caf"]):
         transform.append(
@@ -548,7 +516,8 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                 ),
             )
         )
-        transform.append(create_random_transform(param_dim=input_dim))
+        if base_kwargs["permute_type"] != "no-permutation":
+            transform.append(create_random_transform(param_dim=input_dim))
 
     transform_fnal = transforms.CompositeTransform(transform)
 

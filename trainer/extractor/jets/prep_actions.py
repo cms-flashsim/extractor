@@ -30,7 +30,7 @@ target_dictionary_jets = {
     "MJet_btagDeepFlavQG": [],
     "MJet_cRegCorr": [],
     "MJet_cRegRes": [],
-    "MJet_chEmEF": [["gm", -0.5, 0.1, [-np.inf, 0]],],
+    "MJet_chEmEF": [["gm", -0.5, 0.1, [-np.inf, 0]],], # was 0 before smearing
     "MJet_chFPV0EF": [],
     "MJet_chHEF": [["t", np.arctan, [50, -50]]],
     "MJet_cleanmask": [["u", 0.5, None]],

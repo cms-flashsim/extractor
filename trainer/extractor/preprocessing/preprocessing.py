@@ -11,10 +11,11 @@ import warnings
 
 warnings.filterwarnings("ignore")  # temporary for MatPlotLibDeprecationWarning bug
 
- # operation dictionary
+# operation dictionary
 
 
 np.random.seed(0)  # fixed seed for random smearing
+
 
 # NOTE: uproot 5 update has changed the way to access the TTree
 # as a multiindex pandas dataframe, in case of future errors the sintax should be:
@@ -83,6 +84,7 @@ def gaus_smearing(df, column_name, sigma, interval):
         )
     return df[column_name]
 
+
 def gaus_smearing_wmean(df, column_name, mean, sigma, interval):
     """
     Performs gaussian smearing on given column. If interval is specified, random gaussian data are assigned to column in interval.
@@ -103,6 +105,7 @@ def gaus_smearing_wmean(df, column_name, mean, sigma, interval):
             lambda x: x + sigma * np.random.normal()
         )
     return df[column_name]
+
 
 def unif_smearing(df, column_name, half_width, interval):
     """
@@ -136,7 +139,6 @@ def transform(df, column_name, function, p):
 
 
 def fix_range(column_name, df):
-
     scale_factor = np.nanmax(np.abs(df[column_name].values))
 
     print(f"Scale factor = {scale_factor}")
@@ -167,7 +169,9 @@ def process_column_var(column_name, operations, df):
             mean = op[1]
             sigma = op[2]
             mask_condition = op[3]
-            df[column_name] = gaus_smearing_wmean(df, column_name, mean, sigma, mask_condition)
+            df[column_name] = gaus_smearing_wmean(
+                df, column_name, mean, sigma, mask_condition
+            )
 
         elif op[0] == "u":
             half_width = op[1]
@@ -185,11 +189,19 @@ def process_column_var(column_name, operations, df):
     return df[column_name]
 
 
-def preprocessing(df, vars_dictionary, scale_factor_name):
+def get_fullsim_ranges(df, column_name):
+    """
+    Returns min and max of given column in dataframe
+    """
+    return np.min(df[column_name]), np.max(df[column_name])
+
+
+def preprocessing(df, vars_dictionary, scale_factor_name, range_name):
     """
     Preprocessing general function given any dataframe and its dictionary
     """
     dict_to_save = {}
+    range_dict = {}
 
     print(f"Num. before processing: {df.shape}")
 
@@ -199,6 +211,8 @@ def preprocessing(df, vars_dictionary, scale_factor_name):
         # fig, axs = plt.subplots(1, 2, figsize=(10, 5))
         # plt.suptitle(f"{column_name}")
         # axs[0].hist(df[column_name], bins=30, histtype="step")
+        min, max = get_fullsim_ranges(df, column_name)
+        range_dict[column_name.replace("M", "", 1)] = [float(min), float(max)]
         df[column_name] = process_column_var(column_name, operation, df)
         df[column_name], scale = fix_range(column_name, df)
         dict_to_save[column_name] = float(scale)
@@ -210,6 +224,9 @@ def preprocessing(df, vars_dictionary, scale_factor_name):
 
     print(f"Num. after processing: {df.shape}")
 
+    with open(range_name, "w") as f:
+        f.write(json.dumps(range_dict))
+
     f = open(scale_factor_name, "w")
     f.write(json.dumps(dict_to_save))
     f.close()
@@ -217,7 +234,9 @@ def preprocessing(df, vars_dictionary, scale_factor_name):
     return df
 
 
-def make_dataset(files, outname, target_dictionary, scale_factors_name, gen_cols, reco_cols):
+def make_dataset(
+    files, outname, target_dictionary, scale_factors_name, gen_cols, reco_cols
+):
     """
     Makes dataset from given files and saves it to outname
     """

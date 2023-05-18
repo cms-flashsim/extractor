@@ -1,6 +1,8 @@
 import os
 import ROOT
 
+from columns import muon_cond, reco_columns
+
 module_path = os.path.join(os.path.dirname(__file__), "muons.h")
 
 ROOT.gInterpreter.ProcessLine(f'#include "{module_path}"')
@@ -130,7 +132,7 @@ def extractAllMuonFeatures(df):
         .Define(
             "ClosestJet_EncodedHadronFlavour_light",
             "closest_jet_flavour_encoder(CleanGenJet_eta, CleanGenJet_phi, MGenMuon_eta, MGenMuon_phi, CleanGenJet_hadronFlavour, ROOT::VecOps::RVec<int>{0})",
-        )        
+        )
         .Define("MMuon_charge", "Muon_charge[MuonMask]")
         .Define("MMuon_cleanmask", "Muon_cleanmask[MuonMask]")
         .Define("MMuon_dxy", "Muon_dxy[MuonMask]")
@@ -182,13 +184,29 @@ def extractAllMuonFeatures(df):
         .Define("MMuon_tkRelIso", "Muon_tkRelIso[MuonMask]")
         .Define("MMuon_triggerIdLoose", "Muon_triggerIdLoose[MuonMask]")
         .Define("MMuon_nMuon", "Muon_nMuon[MuonMask]")
-
     )
     return extracted
 
 
-def extract_muons(df):
-    df = jet_cleaning(df)
-    df = extractAllMuonFeatures(df)
+def extract_muons(inputname, outputname, dict):
+    ROOT.EnableImplicitMT()
 
-    return df
+    print(f"Processing {inputname}...")
+
+    d = ROOT.RDataFrame("Events", inputname)
+
+    d = jet_cleaning(d)
+    d = extractAllMuonFeatures(d)
+
+    n_match, n_reco = dict["RECOMUON_GENMUON"]
+
+    n_match += d.Histo1D("MMuon_ptRatio").GetEntries()
+    n_reco += d.Histo1D("Muon_pt").GetEntries()
+
+    dict["RECOMUON_GENMUON"] = (n_match, n_reco)
+
+    cols = muon_cond + reco_columns
+
+    d.Snapshot("MMuons", outputname, cols)
+
+    print(f"{outputname} written")

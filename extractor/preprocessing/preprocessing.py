@@ -13,10 +13,6 @@ warnings.filterwarnings("ignore")  # temporary for MatPlotLibDeprecationWarning 
 
  # operation dictionary
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "utils"))
-
-from columns import reco_columns
-
 
 np.random.seed(0)  # fixed seed for random smearing
 
@@ -195,27 +191,20 @@ def preprocessing(df, vars_dictionary, scale_factor_name):
     """
     dict_to_save = {}
 
-    if "ele" in scale_factor_name:
-        tag = "ele"
-    elif "pho" in scale_factor_name:
-        tag = "pho"
-    else:
-        tag = "jet"
-
     print(f"Num. before processing: {df.shape}")
 
     df = df[~df.isin([np.nan, np.inf, -np.inf]).any(axis="columns")]
 
     for column_name, operation in vars_dictionary.items():
-        fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-        plt.suptitle(f"{column_name}")
-        axs[0].hist(df[column_name], bins=30, histtype="step")
+        # fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+        # plt.suptitle(f"{column_name}")
+        # axs[0].hist(df[column_name], bins=30, histtype="step")
         df[column_name] = process_column_var(column_name, operation, df)
         df[column_name], scale = fix_range(column_name, df)
         dict_to_save[column_name] = float(scale)
-        axs[1].hist(df[column_name], bins=30, histtype="step")
-        plt.savefig(f"figures/{tag}/{column_name}.pdf", format="pdf")
-        plt.close()  # produces MatplotlibDeprecationWarning. It is a bug (https://github.com/matplotlib/matplotlib/issues/23921)
+        # axs[1].hist(df[column_name], bins=30, histtype="step")
+        # plt.savefig(f"figures/{tag}/{column_name}.pdf", format="pdf")
+        # plt.close()  # produces MatplotlibDeprecationWarning. It is a bug (https://github.com/matplotlib/matplotlib/issues/23921)
 
     df = df[~df.isin([np.nan, np.inf, -np.inf]).any(axis="columns")]
 
@@ -228,11 +217,11 @@ def preprocessing(df, vars_dictionary, scale_factor_name):
     return df
 
 
-def make_dataset(files, outname, target_dictionary, scale_factors_name, gen_cols):
+def make_dataset(files, outname, target_dictionary, scale_factors_name, gen_cols, reco_cols):
     """
     Makes dataset from given files and saves it to outname
     """
-    cols = gen_cols + reco_columns
+    cols = gen_cols + reco_cols
 
     tree = uproot.open(files[0], num_workers=20)
     df = dataset(tree, cols)
@@ -250,5 +239,3 @@ def make_dataset(files, outname, target_dictionary, scale_factors_name, gen_cols
     dset = file.create_dataset("data", data=df.values, dtype="f4")
 
     file.close()
-
-    os.system(f"mv {outname}.hdf5 ../training")

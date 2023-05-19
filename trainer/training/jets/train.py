@@ -84,8 +84,8 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             "hidden_dim_arqs": args.hidden_dim_arqs,
             "hidden_dim_caf": args.hidden_dim_caf,
             "init_identity": args.init_identity,
+            "permute_type": args.permute_type,
         },
-        "permute_type": args.permute_type,
     }
 
     model = create_mixture_flow_model(**flow_param_dict)
@@ -203,10 +203,10 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
     if not args.distributed or (args.rank % ngpus_per_node == 0):
         if val_func is not None:
             if args.validate_at_0:
-                ddp_model.eval()
+                model.eval()
                 val_func(
                     test_loader,
-                    ddp_model,
+                    model,
                     start_epoch,
                     writer,
                     save_dir,
@@ -232,6 +232,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         train_log_det = 0.0
 
         ddp_model.train()
+        model.train()
 
         for batch_idx, (x, y) in enumerate(train_loader):
             optimizer.zero_grad()
@@ -329,7 +330,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 if val_func is not None:
                     val_func(
                         test_loader,
-                        ddp_model,
+                        model,
                         epoch,
                         writer,
                         save_dir,
@@ -341,7 +342,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             if epoch % args.save_freq == 0:
                 save_model(
                     epoch,
-                    ddp_model,
+                    model,
                     scheduler,
                     train_history,
                     test_history,

@@ -212,6 +212,7 @@ def postprocessing(
     """
     Postprocessing general function given any dataframe and its dictionary
     """
+
     if scale_file_path != None:
         with open(scale_file_path) as scale_file:
             scale_dict = json.load(scale_file)

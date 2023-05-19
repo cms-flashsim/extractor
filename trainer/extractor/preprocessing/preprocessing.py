@@ -214,17 +214,17 @@ def preprocessing(df, vars_dictionary, scale_factor_name, range_name):
 
     df = df[~df.isin([np.nan, np.inf, -np.inf]).any(axis="columns")]
 
-    for column_name, operation in vars_dictionary.items():
+    for column_name, operations in vars_dictionary.items():
         # fig, axs = plt.subplots(1, 2, figsize=(10, 5))
         # plt.suptitle(f"{column_name}")
         # axs[0].hist(df[column_name], bins=30, histtype="step")
         min, max = get_fullsim_ranges(df, column_name)
         range_dict[column_name.replace("M", "", 1)] = [float(min), float(max)]
-        df[column_name] = process_column_var(column_name, operation, df)
+        df[column_name] = process_column_var(column_name, operations, df)
 
         # remove rows with unphysical values
-        if operation[0] == "manual_range":
-            df = manual_range(df, column_name, operation[1])
+        if operations[0][0] == "manual_range":
+            df = manual_range(df, column_name, operations[0][1])
         
         df[column_name], scale = fix_range(column_name, df)
         dict_to_save[column_name.replace("M", "", 1)] = float(scale)
@@ -254,14 +254,17 @@ def make_dataset(
     """
     cols = gen_cols + reco_cols
 
+    print(f"Opening {files[0]}...")
     tree = uproot.open(files[0], num_workers=20)
     df = dataset(tree, cols)
 
     for file in files[1:]:
+        print(f"Opening {file}...")
         tree = uproot.open(file, num_workers=20)
         df = pd.concat([df, dataset(tree, cols)], axis=0)
         df.reset_index(drop=True)
 
+    print("Starting preprocessing...")
     df = preprocessing(df, target_dictionary, scale_factors_name, range_name)
 
     print(df.columns)

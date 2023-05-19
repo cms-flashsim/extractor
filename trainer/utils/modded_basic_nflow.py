@@ -236,12 +236,11 @@ class EmbedATT(nn.Module):
 
         if context is None:
             temps = self.embedding(inputs)
-            temps.view(-1, self._in_shape, self._embed_shape)
+            temps = temps.view(-1, self._in_shape, self._embed_shape)
         else:
             temps = self.embedding(torch.cat((inputs, context), dim=1))
-            temps.view(-1, self._in_shape + self._context_features, self._embed_shape)
+            temps = temps.view(-1, self._in_shape + self._context_features, self._embed_shape)
         outputs = temps
-
         # attention
         outputs, _ = self.attention(outputs, outputs, outputs, need_weights=False)
 

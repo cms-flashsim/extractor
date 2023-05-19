@@ -245,7 +245,7 @@ class EmbedATT(nn.Module):
         print(outputs.shape)
         # attention
         outputs, _ = self.attention(outputs, outputs, outputs, need_weights=False)
-        outputs = outputs.view(-1, self._embed_shape*(self._in_shape + self._context_features))
+        outputs = outputs.view(len(inputs), -1)
         print(outputs.shape)
 
         for i, hidden_layer in enumerate(self._hidden_layers):

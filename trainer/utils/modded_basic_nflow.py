@@ -632,7 +632,7 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                             context_features=context_dim,
                             activation=F.relu,
                             activate_output=False,
-                            batch_norm=base_kwargs["batch_norm_caf"],
+                            layer_norm=base_kwargs["batch_norm_caf"],
                             dropout_probability=base_kwargs["dropout_probability_caf"],
                             num_heads=base_kwargs["att_num_heads"],
                             

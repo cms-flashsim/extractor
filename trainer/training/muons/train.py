@@ -22,7 +22,7 @@ from modded_basic_nflow import (
 )
 
 from args import get_args
-from validation import validate_electrons
+from validation import validate
 
 
 def init_np_seed(worker_id):

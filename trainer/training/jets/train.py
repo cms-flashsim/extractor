@@ -84,8 +84,8 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             "hidden_dim_arqs": args.hidden_dim_arqs,
             "hidden_dim_caf": args.hidden_dim_caf,
             "init_identity": args.init_identity,
+            "permute_type": args.permute_type,
         },
-        "permute_type": args.permute_type,
     }
 
     model = create_mixture_flow_model(**flow_param_dict)

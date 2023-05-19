@@ -159,6 +159,7 @@ class MLP(nn.Module):
         if self._activate_output:
             outputs = self._activation(outputs)
         # outputs = outputs.reshape(-1, *torch.Size(self._out_shape))
+        print(outputs.shape)
 
         return outputs
     
@@ -219,7 +220,7 @@ class EmbedATT(nn.Module):
         
         self._hidden_layers = nn.ModuleList(
             [
-                nn.Linear(self._embed_shape, 128),
+                nn.Linear(self._embed_shape*self._in_shape, 128),
                 nn.Linear(128, 128),
                 nn.Linear(128, 128),
             ]
@@ -244,6 +245,7 @@ class EmbedATT(nn.Module):
         print(outputs.shape)
         # attention
         outputs, _ = self.attention(outputs, outputs, outputs, need_weights=False)
+        outputs = outputs.view(-1, self._embed_shape*self._in_shape)
         print(outputs.shape)
 
         for i, hidden_layer in enumerate(self._hidden_layers):

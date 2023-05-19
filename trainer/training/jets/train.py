@@ -257,20 +257,20 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 loss.backward()
                 optimizer.step()
 
-            if (output_freq is not None) and (batch_idx % output_freq == 0):
-                duration = time.time() - start_time
-                start_time = time.time()
-                print(
-                    "[Rank %d] Epoch %d Batch [%2d/%2d] Time [%3.2fs] Loss %2.5f"
-                    % (
-                        args.rank,
-                        epoch,
-                        batch_idx,
-                        len(train_loader),
-                        duration,
-                        loss.item(),
+                if (output_freq is not None) and (batch_idx % output_freq == 0):
+                    duration = time.time() - start_time
+                    start_time = time.time()
+                    print(
+                        "[Rank %d] Epoch %d Batch [%2d/%2d] Time [%3.2fs] Loss %2.5f"
+                        % (
+                            args.rank,
+                            epoch,
+                            batch_idx,
+                            len(train_loader),
+                            duration,
+                            loss.item(),
+                        )
                     )
-                )
 
         train_loss = (train_loss.item() / len(train_loader.dataset)) * args.world_size
         train_log_p = (train_log_p.item() / len(train_loader.dataset)) * args.world_size
@@ -289,9 +289,9 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         # evaluate on the validation set
         with torch.no_grad():
             ddp_model.eval()
-            test_loss = 0.0
-            test_log_p = 0.0
-            test_log_det = 0.0
+            test_loss = torch.tensor([0.0])
+            test_log_p = torch.tensor([0.0])
+            test_log_det = torch.tensor([0.0])
 
             for x, y in test_loader:
                 if gpu is not None:

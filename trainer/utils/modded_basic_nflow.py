@@ -208,7 +208,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
             autoregressive_params
         )
         # scale = torch.sigmoid(unconstrained_scale + 2.0) + self._epsilon
-        scale = F.softplus(unconstrained_scale) + self._epsilon
+        scale = (F.softplus(unconstrained_scale) + self._epsilon).clamp(0, 50)
         log_scale = torch.log(scale)
         outputs = scale * inputs + shift
         logabsdet = torchutils.sum_except_batch(log_scale, num_batch_dims=1)

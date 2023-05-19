@@ -69,6 +69,9 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             "num_steps_maf": args.num_steps_maf,
             "num_steps_arqs": args.num_steps_arqs,
             "num_steps_caf": args.num_steps_caf,
+            "coupling_net": args.coupling_net,
+            "att_embed_shape": args.att_embed_shape,
+            "att_num_heads": args.att_num_heads,
             "num_transform_blocks_maf": args.num_transform_blocks_maf,  # DNN layers per coupling
             "num_transform_blocks_arqs": args.num_transform_blocks_arqs,  # DNN layers per coupling
             "activation": args.activation,

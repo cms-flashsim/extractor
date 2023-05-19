@@ -73,35 +73,35 @@ def extractJetFeatures(df):
         )
         .Define(
             "MClosestMuon_dr",
-            "closest_muon_dr(GenJet_eta, GenJet_phi,MMuon_eta, MMuon_phi)",
+            "closest_muon_dr(MGenJet_eta, MGenJet_phi, MMuon_eta, MMuon_phi)",
         )
         .Define(
             "MClosestMuon_deta",
-            "closest_muon_deta(GenJet_eta, GenJet_phi,MMuon_eta, MMuon_phi)",
+            "closest_muon_deta(MGenJet_eta, MGenJet_phi, MMuon_eta, MMuon_phi)",
         )
         .Define(
             "MClosestMuon_dphi",
-            "closest_muon_dphi(GenJet_eta, GenJet_phi,MMuon_eta, MMuon_phi)",
+            "closest_muon_dphi(MGenJet_eta, MGenJet_phi, MMuon_eta, MMuon_phi)",
         )
         .Define(
             "MClosestMuon_pt",
-            "closest_muon_pt(GenJet_eta, GenJet_phi,MMuon_eta, MMuon_phi, MMuon_pt)",
+            "closest_muon_pt(MGenJet_eta, MGenJet_phi, MMuon_eta, MMuon_phi, MMuon_pt)",
         )
         .Define(
             "MSecondClosestMuon_dr",
-            "second_muon_dr(GenJet_eta, GenJet_phi,MMuon_eta, MMuon_phi)",
+            "second_muon_dr(MGenJet_eta, MGenJet_phi, MMuon_eta, MMuon_phi)",
         )
         .Define(
             "MSecondClosestMuon_deta",
-            "second_muon_deta(GenJet_eta, GenJet_phi,MMuon_eta, MMuon_phi)",
+            "second_muon_deta(MGenJet_eta, MGenJet_phi, MMuon_eta, MMuon_phi)",
         )
         .Define(
             "MSecondClosestMuon_dphi",
-            "second_muon_dphi(GenJet_eta, GenJet_phi,MMuon_eta, MMuon_phi)",
+            "second_muon_dphi(MGenJet_eta, MGenJet_phi, MMuon_eta, MMuon_phi)",
         )
         .Define(
             "MSecondClosestMuon_pt",
-            "second_muon_pt(GenJet_eta, GenJet_phi,MMuon_eta, MMuon_phi, MMuon_pt)",
+            "second_muon_pt(MGenJet_eta, MGenJet_phi, MMuon_eta, MMuon_phi, MMuon_pt)",
         )
         .Define("MJet_area", "Jet_area[JetMask]")
         .Define("MJet_bRegCorr", "Jet_bRegCorr[JetMask]")

@@ -148,10 +148,10 @@ class MLP(nn.Module):
         outputs = self._activation(outputs)
 
         for i, hidden_layer in enumerate(self._hidden_layers):
+            outputs = hidden_layer(outputs)
             # NOTE batch norm is broken right now
             if self._batch_norm:
                 outputs = self.batch_norm_layers[i](outputs)
-            outputs = hidden_layer(outputs)
             outputs = self._activation(outputs)
             outputs = self.dropout(outputs)
 
@@ -512,6 +512,11 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                             "hidden_dim_caf"
                         ],  # list of hidden layer dimensions
                         context_features=context_dim,
+                        activation=F.relu,
+                        activate_output=False,
+                        batch_norm=base_kwargs["batch_norm_caf"],
+                        dropout_probability=base_kwargs["dropout_probability_caf"],
+                        
                     )
                 ),
             )

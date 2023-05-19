@@ -6,7 +6,6 @@ X_DIM = 39
 
 
 def add_args(parser):
-
     # model architecture options
     parser.add_argument("--y_dim", type=int, default=Y_DIM)
     parser.add_argument("--x_dim", type=int, default=X_DIM)
@@ -20,6 +19,7 @@ def add_args(parser):
     parser.add_argument("--activation", type=str, default="relu")
     parser.add_argument("--dropout_probability_maf", type=float, default=0.0)
     parser.add_argument("--dropout_probability_arqs", type=float, default=0.1)
+    parser.add_argument("--dropout_probability_caf", type=float, default=0.0)
     parser.add_argument(
         "--use_residual_blocks_maf", type=eval, default=False, choices=[True, False]
     )
@@ -31,6 +31,9 @@ def add_args(parser):
     )
     parser.add_argument(
         "--batch_norm_arqs", type=eval, default=True, choices=[True, False]
+    )
+    parser.add_argument(
+        "--batch_norm_caf", type=eval, default=True, choices=[True, False]
     )
     parser.add_argument("--num_bins", type=int, default=64)
     parser.add_argument("--tail_bound", type=float, default=1.0)

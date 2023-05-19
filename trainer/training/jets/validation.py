@@ -91,7 +91,7 @@ def validate(
     full_df.to_pickle(os.path.join(save_dir, "./full_jet_df.pkl"))
 
     # optionally you can read full_df from pickle and skip the previous steps
-    # full_df = pd.read_pickle("./full_jet_df.pkl") # please provide column names
+    # full_df = pd.read_pickle("./full_jet_df.pkl") # please provide column names (full_sim_cols = ["FullSJet_" + x for x in jet_names])
     gen = pd.DataFrame(data=full_df[jet_cond].values, columns=jet_cond)
     reco = pd.DataFrame(data=full_df[full_sim_cols].values, columns=reco_columns)
     samples = pd.DataFrame(data=full_df[reco_columns].values, columns=reco_columns)
@@ -325,6 +325,7 @@ def validate(
         "btagCSVV2",
         "btagDeepB",
     ]
+    taggers = [f"Jet_{tagger}" for tagger in taggers]
 
     b_mask = gen["GenJet_EncodedPartonFlavour_b"].values
     uds_mask = gen["GenJet_EncodedPartonFlavour_light"].values

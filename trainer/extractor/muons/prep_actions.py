@@ -44,6 +44,7 @@ target_dictionary_muons = {
         ["t", np.arctan, [80, 0]],
     ],
     "MMuon_ptRatio": [
+        ["manual_range", [0.1, 5]],
         ["t", np.arctan, [10, -10]],
     ],
     "MMuon_dxy": [["t", np.arctan, [150, 0]]],

@@ -227,7 +227,6 @@ def validate(
         df["Jet_pt"] = df["Jet_ptRatio"] * gen["GenJet_pt"]
         df["Jet_eta"] = df["Jet_etaMinusGen"] + gen["GenJet_eta"]
         df["Jet_phi"] = df["Jet_phiMinusGen"] + gen["GenJet_phi"]
-        df["Jet_mass"] = df["Jet_massRatio"] * gen["GenJet_mass"]
 
     # Zoom-in for high ws distributions
 
@@ -301,7 +300,7 @@ def validate(
     labels = [f"Jet_{label}" for label in labels]
 
     ranges = [
-        (0, 0.5),
+        (0, 1),
         (0, 1),
         (0, 1),
         (0, 1),

@@ -229,10 +229,12 @@ def postprocessing(
         with open(scale_file_path) as scale_file:
             scale_dict = json.load(scale_file)
 
-    for column_name, operation in vars_dictionary.items():
-        if scale_file_path != None:
+    if scale_file_path != None:
+        for column_name in df.columns:
             if column_name in scale_dict.keys():
                 df[column_name] = restore_range(column_name, scale_dict, df)
+
+    for column_name, operation in vars_dictionary.items():
         df[column_name] = process_column_var(
             column_name, operation, df, gen_df, saturate_ranges_path
         )

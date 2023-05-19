@@ -148,6 +148,14 @@ def fix_range(column_name, df):
 
     return df[column_name], scale_factor
 
+def manual_range(df, column_name, interval):
+    """
+    Removes all rows where column_name is not in interval.
+    """
+    print(f"Setting range to {interval}...")
+    df = df[(df[column_name] >= interval[0]) & (df[column_name] <= interval[1])]
+    return df
+
 
 def process_column_var(column_name, operations, df):
     """
@@ -214,6 +222,11 @@ def preprocessing(df, vars_dictionary, scale_factor_name, range_name):
         min, max = get_fullsim_ranges(df, column_name)
         range_dict[column_name.replace("M", "", 1)] = [float(min), float(max)]
         df[column_name] = process_column_var(column_name, operation, df)
+
+        # remove rows with unphysical values
+        if operation[0] == "manual_range":
+            df = manual_range(df, column_name, operation[1])
+        
         df[column_name], scale = fix_range(column_name, df)
         dict_to_save[column_name.replace("M", "", 1)] = float(scale)
         # axs[1].hist(df[column_name], bins=30, histtype="step")

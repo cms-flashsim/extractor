@@ -127,7 +127,7 @@ def extractJetFeatures(df):
         .Define("MJet_hfsigmaEtaEta", "Jet_hfsigmaEtaEta[JetMask]")
         .Define("MJet_hfsigmaPhiPhi", "Jet_hfsigmaPhiPhi[JetMask]")
         .Define("MJet_jetId", "Jet_jetId[JetMask]")
-        .Define("MJet_massRatio", "Jet_mass[JetMask]/MGenJet_mass")
+        .Define("MJet_mass", "Jet_mass[JetMask]")
         .Define("MJet_muEF", "Jet_muEF[JetMask]")
         .Define("MJet_muonSubtrFactor", "Jet_muonSubtrFactor[JetMask]")
         .Define("MJet_nConstituents", "Jet_nConstituents[JetMask]")

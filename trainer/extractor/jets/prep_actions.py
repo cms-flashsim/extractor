@@ -20,10 +20,10 @@ target_dictionary_jets = {
     "MJet_area": [],
     "MJet_bRegCorr": [],
     "MJet_bRegRes": [],
-    "MJet_btagCSVV2": [],
-    "MJet_btagDeepB": [],
-    "MJet_btagDeepCvB": [],
-    "MJet_btagDeepCvL": [],
+    "MJet_btagCSVV2": [["gm", -0.5, 0.1, [-np.inf, -0.01]]], # was -1 before smearing
+    "MJet_btagDeepB": [["gm", -0.5, 0.1, [-np.inf, -0.01]]], # was -1 before smearing
+    "MJet_btagDeepCvB": [["gm", -0.5, 0.1, [-np.inf, -0.01]]], # was -1 before smearing
+    "MJet_btagDeepCvL": [["gm", -0.5, 0.1, [-np.inf, -0.01]]], # was -1 before smearing
     "MJet_btagDeepFlavB": [],
     "MJet_btagDeepFlavCvB": [],
     "MJet_btagDeepFlavCvL": [],
@@ -41,7 +41,7 @@ target_dictionary_jets = {
     "MJet_hfsigmaEtaEta": [["gm", -0.5, 0.1, [-np.inf, 0]],], # -1 before smearing
     "MJet_hfsigmaPhiPhi": [["gm", -0.5, 0.1, [-np.inf, 0]],], # -1 before smearing
     "MJet_jetId": [["u", 0.5, None]],
-    "MJet_massRatio": [],
+    "MJet_mass": [],
     "MJet_muEF": [["gm", -0.5, 0.1, [-np.inf, 0]],], # 0 before smearing
     "MJet_muonSubtrFactor": [["gm", -0.5, 0.1, [-np.inf, 0]],], # 0 before smearing
     "MJet_nConstituents": [["u", 0.5, None]],
@@ -51,7 +51,7 @@ target_dictionary_jets = {
     "MJet_neHEF": [],
     "MJet_partonFlavour": [["u", 0.5, None]],
     "MJet_phiMinusGen": [],
-    "MJet_ptRatio": [],
+    "MJet_ptRatio": [["manual_range", [0.1, 5]]],
     "MJet_puId": [["u", 0.5, None]],
     "MJet_puIdDisc": [],
     "MJet_qgl": [],

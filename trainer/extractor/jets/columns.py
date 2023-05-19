@@ -48,7 +48,7 @@ jet_names = [
     "hfsigmaEtaEta",
     "hfsigmaPhiPhi",
     "jetId",
-    "massRatio",
+    "mass",
     "muEF",
     "muonSubtrFactor",
     "nConstituents",

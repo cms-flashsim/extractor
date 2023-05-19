@@ -71,7 +71,7 @@ def validate(
             reco.append(x)
             samples.append(x_sampled)
 
-    print(f"Average objs/sec: {np.mean(np.array(times))}")
+    print(f"Average objs/sec: {len(x_sampled)/np.mean(np.array(times))}")
 
     # Fix cols names to remove M at beginning
     reco_columns = ["Jet_" + x for x in jet_names]
@@ -98,6 +98,7 @@ def validate(
     # NOTE maybe add saturation here as done in nbd??
     reco = postprocessing(
         reco,
+        gen,
         target_dictionary,
         "scale_factors_jets.json",
         saturate_ranges_path="ranges_jets.json",
@@ -105,6 +106,7 @@ def validate(
 
     samples = postprocessing(
         samples,
+        gen,
         target_dictionary,
         "scale_factors_jets.json",
         saturate_ranges_path="ranges_jets.json",

@@ -16,10 +16,10 @@ In the case of multiple operations, order follows the operation list indexing.
 """
 
 target_dictionary = {
-    "MJet_btagCSVV2": [["d", [-np.inf, -0.01], -1]],
-    "MJet_btagDeepB": [["d", [-np.inf, -0.01], -1]], 
-    "MJet_btagDeepCvB": [["d", [-np.inf, -0.01], -1]], 
-    "MJet_btagDeepCvL": [["d", [-np.inf, -0.01], -1]],
+    "btagCSVV2": [["d", [-np.inf, -0.01], -1]],
+    "btagDeepB": [["d", [-np.inf, -0.01], -1]], 
+    "btagDeepCvB": [["d", [-np.inf, -0.01], -1]], 
+    "btagDeepCvL": [["d", [-np.inf, -0.01], -1]],
     "chEmEF": [["d", [-np.inf, 0], 0]],
     "chHEF": [["i", np.tan, [50, -50]]],
     "cleanmask": [["c", 0.5, [0, 1]]],

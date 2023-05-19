@@ -189,7 +189,8 @@ def validate(
             n_bins, saturated_samples[elm[0]].values, gen[elm[1]].values
         )
         fig, (ax1) = plt.subplots(1, 1, figsize=(10, 6), tight_layout=True)
-
+        print(xe, x_slice_mean, x_slice_rms, xbinwn)
+        print(xe_sat, x_slice_mean_sat, x_slice_rms_sat, xbinwn_sat)
         hep.cms.text('Simulation Preliminary')
 
         ax1.errorbar(xe[:-1]+ xbinwn/2, x_slice_mean, x_slice_rms, marker='o', fmt='_',  label='FullSim')
@@ -210,7 +211,7 @@ def validate(
         ax2.errorbar(xe_sat[:-1]+ xbinwn_sat/2, x_slice_rms_sat, color='tab:orange', label='FlashSim')
 
         ax2.set_xscale('log')
-        ax2.set_xlim([10,1000])
+        ax2.set_xlim(elm[2])
         ax2.set_xlabel(r"GenJet p$_T$ [GeV]", fontsize=18)
         ax2.set_ylabel("RMS", fontsize=18)
         ax2.legend(fontsize=16, frameon=False)
@@ -232,7 +233,7 @@ def validate(
     # Zoom-in for high ws distributions
 
     incriminated = [
-        ["Jet_pt", [0, 100]],
+        ["Jet_pt", [0, 1000]],
         ["Jet_eta", [-3, 3]],
         ["Jet_phi", [-3.14, 3.14]],
         ["Jet_mass", [0, 100]],
@@ -333,7 +334,7 @@ def validate(
     for tagger in taggers:
         fpr, tpr, roc_auc, bs, nbs = tagROC(reco, b_mask, uds_mask, tagger)
         fpr2, tpr2, roc_auc2, bs2, nbs2 = tagROC(samples, b_mask, uds_mask, tagger)
-        plt.figure()
+        fig = plt.figure()
         lw = 2
 
         plt.plot(

@@ -2,34 +2,6 @@
 #ifndef UTILS_MUON_H
 #define UTILS_MUON_H
 
-auto clean_genjet_mask(ROOT::VecOps::RVec<float> &jet_pt,
-                       ROOT::VecOps::RVec<float> &jet_eta,
-                       ROOT::VecOps::RVec<float> &jet_phi,
-                       ROOT::VecOps::RVec<float> &lep_pt,
-                       ROOT::VecOps::RVec<float> &lep_eta,
-                       ROOT::VecOps::RVec<float> &lep_phi) {
-  /* Mask to remove GenElectrons  and GenMuons from the GenJet collection.*/
-  auto lep_size = lep_pt.size();
-  auto jet_size = jet_pt.size();
-
-  ROOT::VecOps::RVec<int> clean_jet_mask;
-  clean_jet_mask.reserve(jet_size);
-
-  for (size_t i = 0; i < jet_size; i++) {
-    clean_jet_mask.push_back(1);
-    for (size_t j = 0; j < lep_size; j++) {
-      auto dpt = jet_pt[i] - lep_pt[j];
-      auto deta = jet_eta[i] - lep_eta[j];
-      auto dphi = TVector2::Phi_mpi_pi(jet_phi[i] - lep_phi[j]);
-      auto dr = TMath::Sqrt(deta * deta + dphi * dphi);
-
-      if ((dr <= 0.01) && ((dpt / lep_pt[j]) <= 0.001)) {
-        clean_jet_mask[i] = 0;
-      }
-    }
-  }
-  return clean_jet_mask;
-}
 auto MDeltaPhi(ROOT::VecOps::RVec<float> &Phi1,
                ROOT::VecOps::RVec<float> &Phi2) {
   auto size = Phi1.size();
@@ -207,9 +179,10 @@ auto match_reco_to_gen(
   ROOT::VecOps::RVec<int> indexes(size);
   for (size_t i = 0; i < size; i++) {
     indexes[i] = -1;
-    curr_index = Muon_genPartIdx[i];
-    if (curr_index >= 0)
-      &&((GenPart_statusFlags[curr_index] & 8192) = 0) indexes[i] = curr_index;
+    auto curr_index = Muon_genPartIdx[i];
+    if ((curr_index >= 0) && ((GenPart_statusFlags[curr_index] & 8192) = 0)) {
+      indexes[i] = curr_index;
+    }
   }
   return indexes;
 }
@@ -250,8 +223,8 @@ auto closest_jet_flavour_encoder(ROOT::VecOps::RVec<float> &etaj,
                                  ROOT::VecOps::RVec<int> &fj,
                                  ROOT::VecOps::RVec<int> flavours) {
 
-  /* General function to encode the hadron and parton flavour of the closest Jet
-     object. To be used for flavour one-hot encoding for training.
+  /* General function to encode the hadron and parton flavour of the closest
+     Jet object. To be used for flavour one-hot encoding for training.
   */
 
   auto size_outer = etae.size();

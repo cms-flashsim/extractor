@@ -171,19 +171,21 @@ auto Mcharge(ROOT::VecOps::RVec<int> &pdgId) {
   return charge;
 }
 
-auto match_reco_to_gen(ROOT::VecOps::RVec<int> &Muon_genPartIdx // Muon_genPartIdx
-                      ROOT::VecOps::RVec<int> &GenPart_statusFlags) { //GenPart_statusFlags
+auto match_reco_to_gen(
+    ROOT::VecOps::RVec<int> &Muon_genPartIdx,       // Muon_genPartIdx
+    ROOT::VecOps::RVec<int> &GenPart_statusFlags) { // GenPart_statusFlags
 
   auto size = Muon_genPartIdx.size();
-  ROOT::VecOps::RVec<int> indexes (size);
+  ROOT::VecOps::RVec<int> indexes(size);
   for (size_t i = 0; i < size; i++) {
     indexes[i] = -1;
-    curr_index = Muon_genPartIdx[i];
-    if (curr_index >= 0) && ((GenPart_statusFlags[curr_index] & 8192) = 0)
+    auto curr_index = Muon_genPartIdx[i];
+    if ((curr_index >= 0) && ((GenPart_statusFlags[curr_index] & 8192) == 0)) {
       indexes[i] = curr_index;
-                      }
-    return indexes;
-                        }
+    }
+  }
+  return indexes;
+}
 
 auto clean_genjet_mask(ROOT::VecOps::RVec<float> &jet_pt,
                        ROOT::VecOps::RVec<float> &jet_eta,
@@ -221,8 +223,8 @@ auto closest_jet_flavour_encoder(ROOT::VecOps::RVec<float> &etaj,
                                  ROOT::VecOps::RVec<int> &fj,
                                  ROOT::VecOps::RVec<int> flavours) {
 
-  /* General function to encode the hadron and parton flavour of the closest Jet
-     object. To be used for flavour one-hot encoding for training.
+  /* General function to encode the hadron and parton flavour of the closest
+     Jet object. To be used for flavour one-hot encoding for training.
   */
 
   auto size_outer = etae.size();

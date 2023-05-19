@@ -92,7 +92,6 @@ muon_names = [
     "tkIsoId",
     "tkRelIso",
     "triggerIdLoose",
-    "nMuon",
 ]
 
 reco_columns = [f"MMuon_{name}" for name in muon_names]

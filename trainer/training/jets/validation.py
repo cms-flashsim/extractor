@@ -183,10 +183,10 @@ def validate(
 
     for elm in columns:
         x_slice_mean, x_slice_rms, xbinwn, xe = profile_hist(
-            n_bins, reco[elm[0]], gen[elm[1]]
+            n_bins, reco[elm[0]].values, gen[elm[1]].values
         )
         x_slice_mean_sat, x_slice_rms_sat, xbinwn_sat, xe_sat = profile_hist(
-            n_bins, saturated_samples[elm[0]], gen[elm[1]]
+            n_bins, saturated_samples[elm[0]].values, gen[elm[1]].values
         )
         fig, (ax1) = plt.subplots(1, 1, figsize=(10, 6), tight_layout=True)
 

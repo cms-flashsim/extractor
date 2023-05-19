@@ -364,13 +364,13 @@ def main():
     print(args)
 
     args.log_name = args.log_name
-    os.path.join(
+    save_dir = os.path.join(
         "/m100_scratch/userexternal/fvaselli", "checkpoints", args.log_name
     )
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    val_func = validate_electrons
+    val_func = validate
     ngpus_per_node = torch.cuda.device_count()
     if args.distributed:
         args.world_size = ngpus_per_node * args.world_size

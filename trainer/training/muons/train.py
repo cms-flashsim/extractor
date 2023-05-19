@@ -368,7 +368,7 @@ def main():
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    val_func = validate_electrons
+    val_func = validate
     ngpus_per_node = torch.cuda.device_count()
     if args.distributed:
         args.world_size = ngpus_per_node * args.world_size

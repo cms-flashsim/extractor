@@ -223,7 +223,7 @@ def preprocessing(df, vars_dictionary, scale_factor_name, range_name):
         df[column_name] = process_column_var(column_name, operations, df)
 
         # remove rows with unphysical values
-        if operations[0][0] == "manual_range":
+        if len(operations != 0) and (operations[0][0] == "manual_range"):
             df = manual_range(df, column_name, operations[0][1])
         
         df[column_name], scale = fix_range(column_name, df)

@@ -68,7 +68,7 @@ def profile_hist(n_bins, x_arr, y_arr):
 
   # getting the mean and RMS values of each vertical slice of the 2D distribution
   x_slice_mean, x_slice_rms = [], []
-  for i,b in enumerate(xen[:-1]):
+  for i,b in enumerate(xe[:-1]):
       x_slice_mean.append( y[ (x>xe[i]) & (x<=xe[i+1]) ].mean())
       x_slice_rms.append( y[ (x>xe[i]) & (x<=xe[i+1]) ].std())
       

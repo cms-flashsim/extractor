@@ -75,6 +75,7 @@ def validate(
 
     # Fix cols names to remove M at beginning
     reco_columns = ["Jet_" + x for x in jet_names]
+    jet_cond = [x[1:] for x in jet_cond]
     # Making DataFrames
 
     gen = np.array(gen).reshape((-1, args.y_dim))

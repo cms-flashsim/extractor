@@ -53,23 +53,23 @@ def validate(
         samples = []
 
         for bid, data in enumerate(test_loader):
-            z, y = data[0], data[1]
+            x, y = data[0], data[1]
             inputs_y = y.cuda(device)
             start = time.time()
-            z_sampled = model.sample(
+            x_sampled = model.sample(
                 num_samples=1, context=inputs_y.view(-1, args.y_dim)
             )
             t = time.time() - start
-            print(f"Objects per second: {len(z_sampled) / t} [Hz]")
+            print(f"Objects per second: {len(x_sampled) / t} [Hz]")
             times.append(t)
 
-            z_sampled = z_sampled.cpu().detach().numpy()
+            x_sampled = x_sampled.cpu().detach().numpy()
             inputs_y = inputs_y.cpu().detach().numpy()
-            z = z.cpu().detach().numpy()
-            z_sampled = z_sampled.reshape(-1, args.zdim)
+            x = x.cpu().detach().numpy()
+            x_sampled = x_sampled.reshape(-1, args.x_dim)
             gen.append(inputs_y)
-            reco.append(z)
-            samples.append(z_sampled)
+            reco.append(x)
+            samples.append(x_sampled)
 
     print(f"Average objs/sec: {np.mean(np.array(times))}")
 
@@ -78,8 +78,8 @@ def validate(
     # Making DataFrames
 
     gen = np.array(gen).reshape((-1, args.y_dim))
-    reco = np.array(reco).reshape((-1, args.zdim))
-    samples = np.array(samples).reshape((-1, args.zdim))
+    reco = np.array(reco).reshape((-1, args.x_dim))
+    samples = np.array(samples).reshape((-1, args.x_dim))
 
     fullarray = np.concatenate((gen, reco, samples), axis=1)
     full_sim_cols = ["FullSJet_" + x for x in jet_names]

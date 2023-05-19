@@ -204,10 +204,10 @@ class EmbedATT(nn.Module):
 
         if context_features is not None:
             input = in_shape + context_features
-            self.embedding = nn.Linear(input, input*embed_shape, max_norm=True)
+            self.embedding = nn.Linear(input, input*embed_shape)
         else:
             input = in_shape
-            self.embedding = nn.Linear(input, input*embed_shape, max_norm=True)
+            self.embedding = nn.Linear(input, input*embed_shape)
 
         if self._layer_norm:
             self.layer_norm_layers = nn.ModuleList(

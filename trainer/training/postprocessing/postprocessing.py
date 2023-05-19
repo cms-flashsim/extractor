@@ -28,6 +28,11 @@ def saturate_on_full(df, column_name, saturate_ranges_path):
                 min = ranges[0]
                 max = ranges[1]
                 val = df[column_name].values
+                print("column_name: ", column_name)
+                print("min: ", min)
+                print("max: ", max)
+                print("val: ", val)
+                print("Number of nans in val: ", np.sum(np.isnan(val)))
                 saturated = np.where(val < min, min, val)
                 saturated = np.where(saturated > max, max, saturated)
                 df[column_name] = saturated
@@ -224,6 +229,8 @@ def postprocessing(
         df[column_name] = process_column_var(
             column_name, operation, df, gen_df, saturate_ranges_path
         )
+    
+    for column_name in df.columns:
         df[column_name] = saturate_on_full(df, column_name, saturate_ranges_path)
 
     return df

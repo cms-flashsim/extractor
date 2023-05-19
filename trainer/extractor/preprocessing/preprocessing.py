@@ -25,8 +25,8 @@ def dataset(tree, cols, version=0, dictionary=False, *args, **kwargs):
     Given the TTree, returns the corresponding pandas dataframe.
     If dictionary is True, an empty dictionary of TTree variables is dumped on .txt file (to be copied on dictionary.py).
     """
-    df = ak.to_dataframe(
-        tree.arrays(expressions=cols, library="ak", *args, **kwargs)
+    df = (
+        ak.to_dataframe(tree.arrays(expressions=cols, library="ak", *args, **kwargs))
         .reset_index(drop=True)
         .astype("float32")
         .dropna()
@@ -148,6 +148,7 @@ def fix_range(column_name, df):
 
     return df[column_name], scale_factor
 
+
 def manual_range(df, column_name, interval):
     """
     Removes all rows where column_name is not in interval.
@@ -226,7 +227,7 @@ def preprocessing(df, vars_dictionary, scale_factor_name, range_name):
         # remove rows with unphysical values
         if (len(operations) != 0) and (operations[0][0] == "manual_range"):
             df = manual_range(df, column_name, operations[0][1])
-        
+
         df[column_name], scale = fix_range(column_name, df)
         dict_to_save[column_name.replace("M", "", 1)] = float(scale)
         # axs[1].hist(df[column_name], bins=30, histtype="step")
@@ -248,7 +249,13 @@ def preprocessing(df, vars_dictionary, scale_factor_name, range_name):
 
 
 def make_dataset(
-    files, outname, target_dictionary, scale_factors_name, range_name, gen_cols, reco_cols
+    files,
+    outname,
+    target_dictionary,
+    scale_factors_name,
+    range_name,
+    gen_cols,
+    reco_cols,
 ):
     """
     Makes dataset from given files and saves it to outname

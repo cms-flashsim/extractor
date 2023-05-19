@@ -326,11 +326,12 @@ def validate(
         "btagDeepB",
     ]
 
-    b_content = gen["GenJet_partonFlavour"].values
+    b_mask = gen["GenJet_EncodedPartonFlavour_b"].values
+    uds_mask = gen["GenJet_EncodedPartonFlavour_light"].values
 
     for tagger in taggers:
-        fpr, tpr, roc_auc, bs, nbs = tagROC(reco, b_content, tagger)
-        fpr2, tpr2, roc_auc2, bs2, nbs2 = tagROC(samples, b_content, tagger)
+        fpr, tpr, roc_auc, bs, nbs = tagROC(reco, b_mask, uds_mask, tagger)
+        fpr2, tpr2, roc_auc2, bs2, nbs2 = tagROC(samples, b_mask, uds_mask, tagger)
         plt.figure()
         lw = 2
 

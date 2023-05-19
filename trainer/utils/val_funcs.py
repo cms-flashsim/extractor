@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.metrics import roc_curve, auc
 
 
-def tagROC(reco, gen_partonFlavour, tag_name):
+def tagROC(reco, gen_partonFlavour_b, gen_partonFlavour_uds,  tag_name):
   """ Compute the ROC curve for a given b-tagging on gen parton flavour
     inputs:
     reco: reconstructed jets DF
@@ -18,9 +18,8 @@ def tagROC(reco, gen_partonFlavour, tag_name):
     bs: b-tagged jets
     nbs: non-b-tagged jets"""
   
-  truth = gen_partonFlavour.flatten()
-  mask_b = np.where(truth==5)
-  mask_uds = np.where((truth==1) | (truth==2) | (truth==3))
+  mask_b = gen_partonFlavour_b.flatten()
+  mask_uds = gen_partonFlavour_uds.flatten()
   bs = reco[tag_name].values()[mask_b].flatten()
   nbs = reco[tag_name].values()[mask_uds].flatten()
   # nbs = nbs[0:len(bs)]

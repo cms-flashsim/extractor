@@ -18,8 +18,8 @@ def tagROC(reco, gen_partonFlavour_b, gen_partonFlavour_uds,  tag_name):
     bs: b-tagged jets
     nbs: non-b-tagged jets"""
   
-  mask_b = gen_partonFlavour_b.flatten()
-  mask_uds = gen_partonFlavour_uds.flatten()
+  mask_b = np.array(gen_partonFlavour_b.flatten(), dtype=bool)
+  mask_uds = np.array(gen_partonFlavour_uds.flatten(), dtype=bool)
   bs = reco[tag_name].values[mask_b].flatten()
   nbs = reco[tag_name].values[mask_uds].flatten()
   # nbs = nbs[0:len(bs)]

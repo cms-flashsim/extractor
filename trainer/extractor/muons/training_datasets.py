@@ -1,5 +1,8 @@
 import os
-from extractor.preprocessing.preprocessing import make_dataset
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "preprocessing"))
+
+from preprocessing import make_dataset
 from prep_actions import target_dictionary_muons as target_dictionary
 from columns import muon_cond, reco_columns
 

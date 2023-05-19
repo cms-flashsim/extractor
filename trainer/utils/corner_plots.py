@@ -47,5 +47,4 @@ def make_corner(reco, samples, labels, title, ranges=None, *args, **kwargs):
         fontname="sans-serif",
     )
     plt.suptitle(title, fontsize=20)
-    plt.close()
     return fig

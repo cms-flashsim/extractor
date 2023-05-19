@@ -48,9 +48,9 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         )
 
     if args.log_name is not None:
-        log_dir = "runs/%s" % args.log_name
+        log_dir = "/m100_scratch/userexternal/fvaselli/runs/%s" % args.log_name
     else:
-        log_dir = "runs/time-%d" % time.time()
+        log_dir = "/m100_scratch/userexternal/fvaselli/runs/time-%d" % time.time()
 
     if not args.distributed or (args.rank % ngpus_per_node == 0):
         writer = SummaryWriter(logdir=log_dir)
@@ -146,14 +146,14 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
     dirpath = os.path.dirname(__file__)
 
     tr_dataset = ObjectDataset(
-        [os.path.join(dirpath, "MMuons.hdf5")],
+        [os.path.join(dirpath, "MJets.hdf5")],
         x_dim=args.x_dim,
         y_dim=args.y_dim,
         start=0,
         limit=args.train_limit,
     )
     te_dataset = ObjectDataset(
-        [os.path.join(dirpath, "MMuons.hdf5")],
+        [os.path.join(dirpath, "MJets.hdf5")],
         x_dim=args.x_dim,
         y_dim=args.y_dim,
         start=args.train_limit,
@@ -179,7 +179,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
     test_loader = torch.utils.data.DataLoader(
         dataset=te_dataset,
-        batch_size=8192,  # manually set batch size to avoid diff shapes
+        batch_size=10000,  # manually set batch size to avoid diff shapes
         shuffle=False,
         num_workers=0,
         pin_memory=True,
@@ -362,7 +362,9 @@ def main():
     print(args)
 
     args.log_name = args.log_name
-    save_dir = os.path.join(".", "checkpoints", args.log_name)
+    os.path.join(
+        "/m100_scratch/userexternal/fvaselli", "checkpoints", args.log_name
+    )
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 

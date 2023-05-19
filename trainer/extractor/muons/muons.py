@@ -183,7 +183,6 @@ def extractAllMuonFeatures(df):
         .Define("MMuon_tkIsoId", "Muon_tkIsoId[MuonMask]")
         .Define("MMuon_tkRelIso", "Muon_tkRelIso[MuonMask]")
         .Define("MMuon_triggerIdLoose", "Muon_triggerIdLoose[MuonMask]")
-        .Define("MMuon_nMuon", "Muon_nMuon[MuonMask]")
     )
     return extracted
 

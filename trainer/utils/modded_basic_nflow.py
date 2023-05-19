@@ -121,8 +121,8 @@ class MLP(nn.Module):
             self.initial_layer = nn.Linear(in_shape, hidden_sizes[0])
 
         if self._batch_norm:
-            self.batch_norm_layers = nn.ModuleList(
-                [nn.BatchNorm1d(sizes, eps=1e-3) for sizes in hidden_sizes]
+            self.layer_norm_layers = nn.ModuleList(
+                [torch.nn.LayerNorm(sizes) for sizes in hidden_sizes]
             )
         self._hidden_layers = nn.ModuleList(
             [
@@ -151,7 +151,7 @@ class MLP(nn.Module):
             outputs = hidden_layer(outputs)
             # NOTE batch norm is broken right now
             if self._batch_norm:
-                outputs = self.batch_norm_layers[i](outputs)
+                outputs = self.layer_norm_layers[i](outputs)
             outputs = self._activation(outputs)
             outputs = self.dropout(outputs)
 

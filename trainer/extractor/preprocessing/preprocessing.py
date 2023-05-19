@@ -5,6 +5,7 @@ import h5py
 import pandas as pd
 import numpy as np
 import uproot
+import awkward as ak
 
 import warnings
 
@@ -24,8 +25,8 @@ def dataset(tree, cols, version=0, dictionary=False, *args, **kwargs):
     Given the TTree, returns the corresponding pandas dataframe.
     If dictionary is True, an empty dictionary of TTree variables is dumped on .txt file (to be copied on dictionary.py).
     """
-    df = (
-        tree.arrays(expressions=cols, library="pd", *args, **kwargs)
+    df = ak.to_dataframe(
+        tree.arrays(expressions=cols, library="ak", *args, **kwargs)
         .reset_index(drop=True)
         .astype("float32")
         .dropna()

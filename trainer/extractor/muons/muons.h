@@ -180,11 +180,10 @@ auto match_reco_to_gen(
   for (size_t i = 0; i < size; i++) {
     indexes[i] = -1;
     auto curr_index = Muon_genPartIdx[i];
-    if ((curr_index >= 0) && ((GenPart_statusFlags[curr_index] & 8192) == 0)) {
+    if ((curr_index >= 0) && ((GenPart_statusFlags[curr_index] & 8192) > 0)) {
       cout << "curr_index: " << curr_index << endl;
       indexes[i] = curr_index;
     }
-    cout << "indexes[i]: " << indexes[i] << endl;
   }
   return indexes;
 }

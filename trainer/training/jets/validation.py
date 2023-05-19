@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "utils"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "extractor"))
 
 from postprocessing import postprocessing
-from post_actions import target_dictionary
+from post_actions import target_dictionary_jets
 from corner_plots import make_corner
 from val_funcs import tagROC, profile_hist
 
@@ -99,7 +99,7 @@ def validate(
     reco = postprocessing(
         reco,
         gen,
-        target_dictionary,
+        target_dictionary_jets,
         "scale_factors_jets.json",
         saturate_ranges_path="ranges_jets.json",
     )
@@ -107,7 +107,7 @@ def validate(
     samples = postprocessing(
         samples,
         gen,
-        target_dictionary,
+        target_dictionary_jets,
         "scale_factors_jets.json",
         saturate_ranges_path="ranges_jets.json",
     )

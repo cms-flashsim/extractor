@@ -172,8 +172,8 @@ auto Mcharge(ROOT::VecOps::RVec<int> &pdgId) {
 }
 
 auto match_reco_to_gen(
-    ROOT::VecOps::RVec<int> &Muon_genPartIdx            // Muon_genPartIdx
-        ROOT::VecOps::RVec<int> &GenPart_statusFlags) { // GenPart_statusFlags
+    ROOT::VecOps::RVec<int> &Muon_genPartIdx,       // Muon_genPartIdx
+    ROOT::VecOps::RVec<int> &GenPart_statusFlags) { // GenPart_statusFlags
 
   auto size = Muon_genPartIdx.size();
   ROOT::VecOps::RVec<int> indexes(size);

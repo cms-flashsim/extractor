@@ -19,10 +19,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "utils"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "extractor"))
 
 from postprocessing import postprocessing
-from post_actions import target_dictionary
+from post_actions import target_dictionary_muons as target_dictionary
 from corner_plots import make_corner
 
-from muons.columns import muon_cond, muon_names
+from muons.columns import muon_cond as muon_cond_M
+from muons.columns import muon_names
 
 
 def validate(
@@ -68,10 +69,11 @@ def validate(
             reco.append(x)
             samples.append(x_sampled)
 
-    print(f"Average objs/sec: {np.mean(np.array(times))}")
+    print(f"Average objs/sec: {len(x_sampled)/np.mean(np.array(times))}")
 
     # Fix cols names to remove M at beginning
-    reco_columns = ["Jet_" + x for x in muon_names]
+    reco_columns = ["Muon_" + x for x in muon_names]
+    muon_cond = [var.replace("M", "", 1) for var in muon_cond_M]
     # Making DataFrames
 
     gen = np.array(gen).reshape((-1, args.y_dim))
@@ -79,7 +81,7 @@ def validate(
     samples = np.array(samples).reshape((-1, args.x_dim))
 
     fullarray = np.concatenate((gen, reco, samples), axis=1)
-    full_sim_cols = ["FullSJet_" + x for x in muon_names]
+    full_sim_cols = ["FullSMuon_" + x for x in muon_names]
     full_df = pd.DataFrame(
         data=fullarray, columns=muon_cond + full_sim_cols + reco_columns
     )
@@ -94,11 +96,19 @@ def validate(
     # Postprocessing
     # NOTE maybe add saturation here as done in nbd??
     reco = postprocessing(
-        reco, target_dictionary, "scale_factors_muon.json", saturate_ranges_path=None
+        reco,
+        gen,
+        target_dictionary,
+        "scale_factors_muon.json",
+        saturate_ranges_path=None,
     )
 
     samples = postprocessing(
-        samples, target_dictionary, "scale_factors_muon.json", saturate_ranges_path=None
+        samples,
+        gen,
+        target_dictionary,
+        "scale_factors_muon.json",
+        saturate_ranges_path=None,
     )
 
     # New DataFrame containing FullSim-range saturated samples
@@ -528,14 +538,7 @@ def validate(
 
     ranges = [
         (0, 200),
-        (-2, 2),
         (0, 0.5),
-        (0, 0.5),
-        (0, 0.5),
-        # (-1, 1),
-        # (-1, 1),
-        (-1, 1),
-        (-1, 1),
         (0, 0.5),
         (0, 0.5),
     ]
@@ -544,95 +547,67 @@ def validate(
     plt.savefig(f"{save_dir}/Isolation_corner.png", format="png")
     writer.add_figure("Corner_plots/Isolation", fig, global_step=epoch)
 
-    # # Impact parameter (range)
+    # Impact parameter (range)
 
-    # labels = [
-    #     "MElectron_pt",
-    #     "MElectron_eta",
-    #     "MElectron_ip3d",
-    #     "MElectron_sip3d",
-    #     "MElectron_dxy",
-    #     "MElectron_dxyErr",
-    #     "MElectron_dz",
-    #     "MElectron_dzErr",
-    # ]
+    labels = [
+        "Muon_pt",
+        "Muon_eta",
+        "Muon_ip3d",
+        "Muon_sip3d",
+        "Muon_dxy",
+        "Muon_dxyErr",
+        "Muon_dz",
+        "Muon_dzErr",
+    ]
 
-    # ranges = [
-    #     (0, 200),
-    #     (-2, 2),
-    #     (0, 0.2),
-    #     (0, 5),
-    #     (-0.2, 0.2),
-    #     (0, 0.05),
-    #     (-0.2, 0.2),
-    #     (0, 0.05),
-    # ]
+    ranges = [
+        (0, 200),
+        (-2, 2),
+        (0, 0.2),
+        (0, 5),
+        (-0.2, 0.2),
+        (0, 0.05),
+        (-0.2, 0.2),
+        (0, 0.05),
+    ]
 
-    # fig = make_corner(
-    #     reco, saturated_samples, labels, "Impact parameter", ranges=ranges
-    # )
-    # writer.add_figure("Corner_plots/Impact parameter", fig, global_step=epoch)
+    fig = make_corner(
+        reco, saturated_samples, labels, "Impact parameter", ranges=ranges
+    )
+    writer.add_figure("Corner_plots/Impact parameter", fig, global_step=epoch)
 
     # # Impact parameter comparison
 
-    # reco["MElectron_sqrt_xy_z"] = np.sqrt(
-    #     (reco["MElectron_dxy"].values) ** 2 + (reco["MElectron_dz"].values) ** 2
-    # )
-    # saturated_samples["MElectron_sqrt_xy_z"] = np.sqrt(
-    #     (saturated_samples["MElectron_dxy"].values) ** 2
-    #     + (saturated_samples["MElectron_dz"].values) ** 2
-    # )
+    reco["Muon_sqrt_xy_z"] = np.sqrt(
+        (reco["Muon_dxy"].values) ** 2 + (reco["Muon_dz"].values) ** 2
+    )
+    saturated_samples["Muon_sqrt_xy_z"] = np.sqrt(
+        (saturated_samples["Muon_dxy"].values) ** 2
+        + (saturated_samples["Muon_dz"].values) ** 2
+    )
 
-    # labels = ["MElectron_sqrt_xy_z", "MElectron_ip3d"]
+    labels = ["Muon_sqrt_xy_z", "Muon_ip3d"]
 
-    # ranges = [(0, 0.2), (0, 0.2)]
+    ranges = [(0, 0.2), (0, 0.2)]
 
-    # fig = make_corner(
-    #     reco,
-    #     saturated_samples,
-    #     labels,
-    #     r"Impact parameter vs $\sqrt{dxy^2 + dz^2}$",
-    #     ranges=ranges,
-    # )
-    # plt.savefig(f"{save_dir}/Impact_parameter_corner.png", format="png")
-    # writer.add_figure(
-    #     r"Corner_plots/Impact parameter vs \sqrt(dxy^2 + dz^2)", fig, global_step=epoch
-    # )
+    fig = make_corner(
+        reco,
+        saturated_samples,
+        labels,
+        r"Impact parameter vs $\sqrt{dxy^2 + dz^2}$",
+        ranges=ranges,
+    )
+    plt.savefig(f"{save_dir}/Impact_parameter_corner.png", format="png")
+    writer.add_figure(
+        r"Corner_plots/Impact parameter vs \sqrt(dxy^2 + dz^2)", fig, global_step=epoch
+    )
 
-    # # Kinematics
+    # Kinematics
 
-    # labels = ["MElectron_pt", "MElectron_eta", "MElectron_phi"]
+    labels = ["Muon_pt", "Muon_eta", "Muon_phi"]
 
-    # ranges = [(0, 200), (-4, 4), (-3.2, 3.2)]
+    ranges = [(0, 200), (-4, 4), (-3.2, 3.2)]
 
-    # fig = make_corner(reco, saturated_samples, labels, "Kinematics", ranges=ranges)
-    # plt.savefig(f"{save_dir}/Kinematics_corner.png", format="png")
-    # writer.add_figure("Corner_plots/Kinematics", fig, global_step=epoch)
-
-    # # Supercluster
-
-    # labels = [
-    #     "MElectron_pt",
-    #     "MElectron_eta",
-    #     "MElectron_sieie",
-    #     "MElectron_r9",
-    #     # "MElectron_mvaFall17V1Iso",
-    #     # "MElectron_mvaFall17V1noIso",
-    #     "MElectron_mvaFall17V2Iso",
-    #     "MElectron_mvaFall17V2noIso",
-    # ]
-
-    # ranges = [
-    #     (0, 200),
-    #     (-2, 2),
-    #     (0, 0.09),
-    #     (0, 1.5),
-    #     # (-1, 1),
-    #     # (-1, 1),
-    #     (-1, 1),
-    #     (-1, 1),
-    # ]
-
-    # fig = make_corner(reco, saturated_samples, labels, "Supercluster", ranges=ranges)
-    # plt.savefig(f"{save_dir}/Supercluster_corner.png", format="png")
-    # writer.add_figure("Corner_plots/Supercluster", fig, global_step=epoch)
+    fig = make_corner(reco, saturated_samples, labels, "Kinematics", ranges=ranges)
+    plt.savefig(f"{save_dir}/Kinematics_corner.png", format="png")
+    writer.add_figure("Corner_plots/Kinematics", fig, global_step=epoch)

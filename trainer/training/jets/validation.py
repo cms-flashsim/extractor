@@ -171,7 +171,7 @@ def validate(
 
     # Profile histograms
     columns = [
-        ["Jet_pt", "GenJet_pt", [10, 1000]],
+        ["Jet_ptRatio", "GenJet_pt", [10, 1000]],
     ]
 
     n_bins = 30

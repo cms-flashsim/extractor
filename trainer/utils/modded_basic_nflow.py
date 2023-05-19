@@ -220,7 +220,7 @@ class EmbedATT(nn.Module):
         
         self._hidden_layers = nn.ModuleList(
             [
-                nn.Linear(self._embed_shape*self._in_shape, 128),
+                nn.Linear(self._embed_shape*(self._in_shape+self._context_features), 128),
                 nn.Linear(128, 128),
                 nn.Linear(128, 128),
             ]

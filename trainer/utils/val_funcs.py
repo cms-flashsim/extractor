@@ -20,8 +20,8 @@ def tagROC(reco, gen_partonFlavour_b, gen_partonFlavour_uds,  tag_name):
   
   mask_b = gen_partonFlavour_b.flatten()
   mask_uds = gen_partonFlavour_uds.flatten()
-  bs = reco[tag_name].values()[mask_b].flatten()
-  nbs = reco[tag_name].values()[mask_uds].flatten()
+  bs = reco[tag_name].values[mask_b].flatten()
+  nbs = reco[tag_name].values[mask_uds].flatten()
   # nbs = nbs[0:len(bs)]
 
   bs = bs[bs >=-0.05]

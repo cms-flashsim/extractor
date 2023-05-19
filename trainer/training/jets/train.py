@@ -227,9 +227,9 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             writer.add_scalar("lr/optimizer", scheduler.get_last_lr(), epoch)
 
         # train for one epoch
-        train_loss = 0.0
-        train_log_p = 0.0
-        train_log_det = 0.0
+        train_loss = torch.tensor([0.0])
+        train_log_p = torch.tensor([0.0])
+        train_log_det = torch.tensor([0.0])
 
         ddp_model.train()
         model.train()

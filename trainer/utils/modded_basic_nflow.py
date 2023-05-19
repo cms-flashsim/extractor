@@ -41,7 +41,7 @@ class AffineCouplingTransform(CouplingTransformMAF):
     """
 
     DEFAULT_SCALE_ACTIVATION = lambda x: torch.sigmoid(x + 2) + 1e-3
-    GENERAL_SCALE_ACTIVATION = lambda x: (softplus(x) + 1e-3).clamp(0, 10)
+    GENERAL_SCALE_ACTIVATION = lambda x: (softplus(x) + 1e-3).clamp(0, 100)
 
     def __init__(
         self,

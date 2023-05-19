@@ -20,10 +20,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "extracto
 
 from postprocessing import postprocessing
 from post_actions import target_dictionary
-from utils.corner_plots import make_corner
-from trainer.utils.val_funcs import tagROC, profile_hist
+from corner_plots import make_corner
+from val_funcs import tagROC, profile_hist
 
-from extractor.jets.columns import jet_cond, jet_names
+from jets.columns import jet_cond, jet_names
 import mplhep as hep
 import matplotlib as mpl
 

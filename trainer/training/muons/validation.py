@@ -22,9 +22,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "extracto
 
 from postprocessing import postprocessing
 from post_actions import target_dictionary
-from utils.corner_plots import make_corner
+from corner_plots import make_corner
 
-from extractor.muons.columns import muon_cond, muon_names
+from muons.columns import muon_cond, muon_names
 
 
 def validate(

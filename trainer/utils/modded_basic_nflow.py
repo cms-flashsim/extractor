@@ -242,11 +242,9 @@ class EmbedATT(nn.Module):
             temps = self.embedding(torch.cat((inputs, context), dim=1))
             temps = temps.view(-1, self._in_shape + self._context_features, self._embed_shape)
         outputs = temps
-        print(outputs.shape)
         # attention
         outputs, _ = self.attention(outputs, outputs, outputs, need_weights=False)
         outputs = outputs.reshape((len(inputs), -1))
-        print(outputs.shape)
 
         for i, hidden_layer in enumerate(self._hidden_layers):
             outputs = hidden_layer(outputs)
@@ -260,7 +258,6 @@ class EmbedATT(nn.Module):
         if self._activate_output:
             outputs = self._activation(outputs)
         # outputs = outputs.reshape(-1, *torch.Size(self._out_shape))
-        print(outputs.shape)
 
         return outputs
 

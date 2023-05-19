@@ -93,6 +93,7 @@ def validate(
     gen = pd.DataFrame(data=full_df[jet_cond].values, columns=jet_cond)
     reco = pd.DataFrame(data=full_df[full_sim_cols].values, columns=reco_columns)
     samples = pd.DataFrame(data=full_df[reco_columns].values, columns=reco_columns)
+    print(reco)
 
     # Postprocessing
     # NOTE maybe add saturation here as done in nbd??

@@ -95,7 +95,6 @@ def validate(
     gen = pd.DataFrame(data=full_df[jet_cond].values, columns=jet_cond)
     reco = pd.DataFrame(data=full_df[full_sim_cols].values, columns=reco_columns)
     samples = pd.DataFrame(data=full_df[reco_columns].values, columns=reco_columns)
-    print(reco)
 
     # Postprocessing
     # NOTE maybe add saturation here as done in nbd??
@@ -120,7 +119,7 @@ def validate(
     saturated_samples = pd.DataFrame()
 
     # 1D FlashSim/FullSim comparison
-
+    mpl.rcParams.update(mpl.rcParamsDefault)
     for column in reco_columns:
         ws = wasserstein_distance(reco[column], samples[column])
 
@@ -302,7 +301,7 @@ def validate(
     labels = [f"Jet_{label}" for label in labels]
 
     ranges = [
-        (0, 1),
+        (0, 0.5),
         (0, 1),
         (0, 1),
         (0, 1),

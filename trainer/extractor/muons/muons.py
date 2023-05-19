@@ -14,17 +14,17 @@ def jet_cleaning(d):
         .Define("TMPGenElectron_pt", "GenPart_pt[TMPGenElectronMask]")
         .Define("TMPGenElectron_eta", "GenPart_eta[TMPGenElectronMask]")
         .Define("TMPGenElectron_phi", "GenPart_phi[TMPGenElectronMask]")
-        .Define("GenMuonMask", "abs(GenPart_pdgId) == 13")
-        .Define("GenMuon_pt", "GenPart_pt[GenMuonMask]")
-        .Define("GenMuon_eta", "GenPart_eta[GenMuonMask]")
-        .Define("GenMuon_phi", "GenPart_phi[GenMuonMask]")
+        .Define("TMPGenMuonMask", "abs(GenPart_pdgId) == 13")
+        .Define("TMPGenMuon_pt", "GenPart_pt[TMPGenMuonMask]")
+        .Define("TMPGenMuon_eta", "GenPart_eta[TMPGenMuonMask]")
+        .Define("TMPGenMuon_phi", "GenPart_phi[TMPGenMuonMask]")
         .Define(
             "CleanGenJet_mask_ele",
             "clean_genjet_mask(GenJet_pt, GenJet_eta, GenJet_phi, TMPGenElectron_pt, TMPGenElectron_eta, TMPGenElectron_phi)",
         )
         .Define(
             "CleanGenJet_mask_muon",
-            "clean_genjet_mask(GenJet_pt, GenJet_eta, GenJet_phi, GenMuon_pt, GenMuon_eta, GenMuon_phi)",
+            "clean_genjet_mask(GenJet_pt, GenJet_eta, GenJet_phi, TMPGenMuon_pt, TMPGenMuon_eta, TMPGenMuon_phi)",
         )
         .Define("CleanGenJetMask", "CleanGenJet_mask_ele && CleanGenJet_mask_muon")
         .Define("CleanGenJet_pt", "GenJet_pt[CleanGenJetMask]")

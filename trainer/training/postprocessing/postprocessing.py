@@ -116,6 +116,7 @@ def unsmear_partonflavour(df, column_name):
     df[column_name] = val
     return df[column_name]
 
+
 def unsmear_puId(df, column_name):
     """Unsmear the puId setting values to 0, 4, 6, 7"""
     val = df[column_name].values
@@ -124,6 +125,9 @@ def unsmear_puId(df, column_name):
     val = np.where(val == 3, 4, val)
     val = np.where(val == 5, 6, val)
     val = np.where(val >= 7, 7, val)
+    df[column_name] = val
+    return df[column_name]
+
 
 def unsmear_jetId(df, column_name):
     """Unsmear the jetId setting values to 1, 2, 3, 6, 7"""
@@ -133,6 +137,9 @@ def unsmear_jetId(df, column_name):
     val = np.where(val == 4, 3, val)
     val = np.where(val == 5, 6, val)
     val = np.where(val >= 7, 7, val)
+    df[column_name] = val
+    return df[column_name]
+
 
 def cut_unsmearing(df, column_name, cut, x1, x2):
     val = df[column_name].values
@@ -161,10 +168,10 @@ def process_column_var(column_name, operations, df, gen_df, saturate_ranges_path
 
         elif op[0] == "upu":
             df[column_name] = unsmear_puId(df, column_name)
-        
+
         elif op[0] == "uj":
             df[column_name] = unsmear_jetId(df, column_name)
-            
+
         elif op[0] == "c":
             cut = op[1]
             vals = op[2]
@@ -229,7 +236,7 @@ def postprocessing(
         df[column_name] = process_column_var(
             column_name, operation, df, gen_df, saturate_ranges_path
         )
-    
+
     for column_name in df.columns:
         df[column_name] = saturate_on_full(df, column_name, saturate_ranges_path)
 

@@ -191,6 +191,7 @@ class EmbedATT(nn.Module):
         self._in_shape = in_shape
         self._embed_shape = embed_shape
         self._out_shape = out_shape
+        self._context_features = context_features
         self._hidden_sizes = hidden_sizes
         self._activation = activation
         self._activate_output = activate_output
@@ -202,9 +203,11 @@ class EmbedATT(nn.Module):
             raise ValueError("List of hidden sizes can't be empty.")
 
         if context_features is not None:
-            self.embedding = nn.Embedding(in_shape + context_features, embed_shape, max_norm=True)
+            input = in_shape + context_features
+            self.embedding = nn.Linear(input, input*embed_shape, max_norm=True)
         else:
-            self.embedding = nn.Embedding(in_shape, embed_shape, max_norm=True)
+            input = in_shape
+            self.embedding = nn.Linear(input, input*embed_shape, max_norm=True)
 
         if self._layer_norm:
             self.layer_norm_layers = nn.ModuleList(
@@ -233,8 +236,10 @@ class EmbedATT(nn.Module):
 
         if context is None:
             temps = self.embedding(inputs)
+            temps.view(-1, self._in_shape, self._embed_shape)
         else:
             temps = self.embedding(torch.cat((inputs, context), dim=1))
+            temps.view(-1, self._in_shape + self._context_features, self._embed_shape)
         outputs = temps
 
         # attention

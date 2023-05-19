@@ -340,14 +340,14 @@ def validate(
             tpr,
             fpr,
             lw=lw,
-            label="ROC curve (area = %0.2f) FullSim" % croc_auc,
+            label="ROC curve (area = %0.2f) FullSim" % roc_auc,
             ls="--",
         )
         plt.plot(
             tpr2,
             fpr2,
             lw=lw,
-            label=f"ROC curve (area = %0.2f) FlashSim" % roc_auc,
+            label=f"ROC curve (area = %0.2f) FlashSim" % roc_auc2,
         )
 
         plt.xlim([0.0, 1.0])

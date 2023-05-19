@@ -4,7 +4,6 @@ import json
 import h5py
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot as plt
 import uproot
 
 import warnings

@@ -19,6 +19,9 @@ def make_corner(reco, samples, labels, title, ranges=None, *args, **kwargs):
         hist_bin_factor=3,
         scale_hist=True,
         plot_datapoints=False,
+        hist_kwargs={"ls": "--"},
+        contour_kwargs={"linestyles": "--"},
+        label_kwargs={"fontsize": 16},
         *args,
         **kwargs
     )
@@ -31,15 +34,17 @@ def make_corner(reco, samples, labels, title, ranges=None, *args, **kwargs):
         hist_bin_factor=3,
         scale_hist=True,
         plot_datapoints=False,
+        label_kwargs={"fontsize": 16},
         *args,
         **kwargs
     )
-    plt.legend(
-        fontsize=24,
-        frameon=False,
-        handles=[blue_line, red_line],
-        bbox_to_anchor=(0.0, 1.0, 1.0, 4.0),
-        loc="upper right",
+    plt.suptitle(
+        r"$\bf{CMS}$ $\it{Simulation \; Preliminary}$",
+        fontsize=16,
+        x=0.29,
+        y=1.0,
+        horizontalalignment="right",
+        fontname="sans-serif",
     )
     plt.suptitle(title, fontsize=20)
     return fig

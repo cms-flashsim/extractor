@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import numpy as np
 import warnings
@@ -12,15 +13,16 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from tensorboardX import SummaryWriter
 
-from trainer.utils.dataset import ObjectDataset
-from trainer.utils.modded_basic_nflow import (
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "utils"))
+from dataset import ObjectDataset
+from modded_basic_nflow import (
     create_mixture_flow_model,
     save_model,
     load_mixture_model,
 )
 
 from args import get_args
-from validation import validate_electrons
+from validation import validate
 
 
 def init_np_seed(worker_id):

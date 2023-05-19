@@ -23,7 +23,8 @@ from post_actions import target_dictionary_jets
 from corner_plots import make_corner
 from val_funcs import tagROC, profile_hist
 
-from jets.columns import jet_cond, jet_names
+from jets.columns import jet_cond as jet_cond_M
+from jets.columns import jet_names
 import mplhep as hep
 import matplotlib as mpl
 
@@ -75,7 +76,7 @@ def validate(
 
     # Fix cols names to remove M at beginning
     reco_columns = ["Jet_" + x for x in jet_names]
-    jet_cond = [x[1:] for x in jet_cond]
+    jet_cond = [x[1:] for x in jet_cond_M]
     # Making DataFrames
 
     gen = np.array(gen).reshape((-1, args.y_dim))

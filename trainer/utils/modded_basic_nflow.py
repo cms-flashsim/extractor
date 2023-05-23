@@ -275,6 +275,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         dropout_probability=0.0,
         use_batch_norm=False,
         init_identity=True,
+        affine_type="sigmoid",
     ):
         self.features = features
         made = made_module.MADE(
@@ -291,6 +292,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         )
         self._epsilon = 1e-3
         self.init_identity = init_identity
+        self.affine_type = affine_type
         if init_identity:
             torch.nn.init.constant_(made.final_layer.weight, 0.0)
             torch.nn.init.constant_(
@@ -306,8 +308,10 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         unconstrained_scale, shift = self._unconstrained_scale_and_shift(
             autoregressive_params
         )
-        # scale = torch.sigmoid(unconstrained_scale + 2.0) + self._epsilon
-        scale = (F.softplus(unconstrained_scale) + self._epsilon).clamp(0, 50)
+        if self.affine_type == "sigmoid":
+            scale = 1000*torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
+        elif self.affine_type == "softplus":
+            scale = (F.softplus(unconstrained_scale) + self._epsilon).clamp(0, 50)
         log_scale = torch.log(scale)
         outputs = scale * inputs + shift
         logabsdet = torchutils.sum_except_batch(log_scale, num_batch_dims=1)
@@ -317,8 +321,10 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         unconstrained_scale, shift = self._unconstrained_scale_and_shift(
             autoregressive_params
         )
-        # scale = torch.sigmoid(unconstrained_scale + 2.0) + self._epsilon
-        scale = F.softplus(unconstrained_scale) + self._epsilon
+        if self.affine_type == "sigmoid":
+            scale = 1000*torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
+        elif self.affine_type == "softplus":
+            scale = (F.softplus(unconstrained_scale) + self._epsilon).clamp(0, 50)
         log_scale = torch.log(scale)
         # print(scale, shift)
         outputs = (inputs - shift) / scale
@@ -336,7 +342,10 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         unconstrained_scale = autoregressive_params[..., 0]
         shift = autoregressive_params[..., 1]
         if self.init_identity:
-            shift = shift - 0.5414
+            if self.affine_type == "sigmoid":
+                shift = shift + 20
+            elif self.affine_type == "softplus":
+                shift = shift - 0.5414
         # print(unconstrained_scale, shift)
         return unconstrained_scale, shift
 

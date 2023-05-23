@@ -41,7 +41,7 @@ class AffineCouplingTransform(CouplingTransformMAF):
     """
 
     DEFAULT_SCALE_ACTIVATION = lambda x: torch.sigmoid(x + 2) + 1e-3
-    GENERAL_SCALE_ACTIVATION = lambda x: (softplus(x) + 1e-3).clamp(0, 10)
+    GENERAL_SCALE_ACTIVATION = lambda x: (softplus(x) + 1e-3).clamp(0, 30)
 
     def __init__(
         self,
@@ -121,8 +121,8 @@ class MLP(nn.Module):
             self.initial_layer = nn.Linear(in_shape, hidden_sizes[0])
 
         if self._batch_norm:
-            self.batch_norm_layers = nn.ModuleList(
-                [nn.BatchNorm1d(sizes, eps=1e-3) for sizes in hidden_sizes]
+            self.layer_norm_layers = nn.ModuleList(
+                [torch.nn.LayerNorm(sizes) for sizes in hidden_sizes]
             )
         self._hidden_layers = nn.ModuleList(
             [
@@ -148,10 +148,109 @@ class MLP(nn.Module):
         outputs = self._activation(outputs)
 
         for i, hidden_layer in enumerate(self._hidden_layers):
+            outputs = hidden_layer(outputs)
             # NOTE batch norm is broken right now
             if self._batch_norm:
-                outputs = self.batch_norm_layers[i](outputs)
+                outputs = self.layer_norm_layers[i](outputs)
+            outputs = self._activation(outputs)
+            outputs = self.dropout(outputs)
+
+        outputs = self.final_layer(outputs)
+        if self._activate_output:
+            outputs = self._activation(outputs)
+        # outputs = outputs.reshape(-1, *torch.Size(self._out_shape))
+        print(outputs.shape)
+
+        return outputs
+    
+
+class EmbedATT(nn.Module):
+    """Use attention on embedding of inputs"""
+
+    def __init__(
+        self,
+        in_shape,
+        embed_shape,
+        out_shape,
+        context_features,
+        hidden_sizes,
+        activation=F.relu,
+        activate_output=False,
+        layer_norm=False,
+        dropout_probability=0.0,
+        num_heads=5,
+    ):
+        """
+        Args:
+            in_shape: tuple, list or torch.Size, the shape of the input.
+            out_shape: tuple, list or torch.Size, the shape of the output.
+            hidden_sizes: iterable of ints, the hidden-layer sizes.
+            activation: callable, the activation function.
+            activate_output: bool, whether to apply the activation to the output.
+        """
+        super().__init__()
+        self._in_shape = in_shape
+        self._embed_shape = embed_shape
+        self._out_shape = out_shape
+        self._context_features = context_features
+        self._hidden_sizes = hidden_sizes
+        self._activation = activation
+        self._activate_output = activate_output
+        self._layer_norm = layer_norm
+        self.dropout = nn.Dropout(p=dropout_probability)
+        self.num_heads = num_heads
+
+        if len(hidden_sizes) == 0:
+            raise ValueError("List of hidden sizes can't be empty.")
+
+        if context_features is not None:
+            input = in_shape + context_features
+            self.embedding = nn.Linear(input, input*embed_shape)
+        else:
+            input = in_shape
+            self.embedding = nn.Linear(input, input*embed_shape)
+
+        if self._layer_norm:
+            self.layer_norm_layers = nn.ModuleList(
+                [torch.nn.LayerNorm(sizes) for sizes in hidden_sizes]
+            )
+
+        self.attention = torch.nn.MultiheadAttention(
+            embed_dim=self._embed_shape, num_heads=self.num_heads, batch_first=True)
+        
+        self._hidden_layers = nn.ModuleList(
+            [
+                nn.Linear(self._embed_shape*(self._in_shape+self._context_features), 128),
+                nn.Linear(128, 128),
+                nn.Linear(128, 128),
+            ]
+        )
+        self.final_layer = nn.Linear(128, np.prod(out_shape))
+
+    def forward(self, inputs, context=None):
+        # if inputs.shape[1:] != self._in_shape:
+        #     raise ValueError(
+        #         "Expected inputs of shape {}, got {}.".format(
+        #             self._in_shape, inputs.shape[1:]
+        #         )
+        #     )
+
+        if context is None:
+            temps = self.embedding(inputs)
+            temps = temps.view(-1, self._in_shape, self._embed_shape)
+        else:
+            temps = self.embedding(torch.cat((inputs, context), dim=1))
+            temps = temps.view(-1, self._in_shape + self._context_features, self._embed_shape)
+        outputs = temps
+        # attention
+        outputs, _ = self.attention(outputs, outputs, outputs, need_weights=False)
+        outputs = outputs.reshape((len(inputs), -1))
+
+        for i, hidden_layer in enumerate(self._hidden_layers):
             outputs = hidden_layer(outputs)
+            # NOTE batch norm is broken right now
+            if self._layer_norm:
+                outputs = self.layer_norm_layers[i](outputs)
             outputs = self._activation(outputs)
             outputs = self.dropout(outputs)
 
@@ -499,25 +598,56 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
             transform.append(create_random_transform(param_dim=input_dim))
 
     for i in range(base_kwargs["num_steps_caf"]):
-        transform.append(
-            AffineCouplingTransform(
-                mask=utils.create_alternating_binary_mask(
-                    features=input_dim, even=(i % 2 == 0)
-                ),
-                transform_net_create_fn=(
-                    lambda in_features, out_features: MLP(
-                        in_shape=in_features,
-                        out_shape=out_features,
-                        hidden_sizes=base_kwargs[
-                            "hidden_dim_caf"
-                        ],  # list of hidden layer dimensions
-                        context_features=context_dim,
-                    )
-                ),
+        if base_kwargs["coupling_net"] == "mlp":
+            transform.append(
+                AffineCouplingTransform(
+                    mask=utils.create_alternating_binary_mask(
+                        features=input_dim, even=(i % 2 == 0)
+                    ),
+                    transform_net_create_fn=(
+                        lambda in_features, out_features: MLP(
+                            in_shape=in_features,
+                            out_shape=out_features,
+                            hidden_sizes=base_kwargs[
+                                "hidden_dim_caf"
+                            ],  # list of hidden layer dimensions
+                            context_features=context_dim,
+                            activation=F.relu,
+                            activate_output=False,
+                            batch_norm=base_kwargs["batch_norm_caf"],
+                            dropout_probability=base_kwargs["dropout_probability_caf"],
+                            
+                        )
+                    ),
+                )
             )
-        )
+        elif base_kwargs["coupling_net"] == "att":
+            transform.append(
+                AffineCouplingTransform(
+                    mask=utils.create_alternating_binary_mask(
+                        features=input_dim, even=(i % 2 == 0)
+                    ),
+                    transform_net_create_fn=(
+                        lambda in_features, out_features: EmbedATT(
+                            in_shape=in_features,
+                            embed_shape=base_kwargs["att_embed_shape"],
+                            out_shape=out_features,
+                            hidden_sizes=base_kwargs[
+                                "hidden_dim_caf"
+                            ],  # list of hidden layer dimensions
+                            context_features=context_dim,
+                            activation=F.relu,
+                            activate_output=False,
+                            layer_norm=base_kwargs["batch_norm_caf"],
+                            dropout_probability=base_kwargs["dropout_probability_caf"],
+                            num_heads=base_kwargs["att_num_heads"],
+                            
+                        )
+                    ),
+                )
+            )
         if base_kwargs["permute_type"] != "no-permutation":
-            transform.append(create_random_transform(param_dim=input_dim))
+                transform.append(create_random_transform(param_dim=input_dim))
 
     transform_fnal = transforms.CompositeTransform(transform)
 

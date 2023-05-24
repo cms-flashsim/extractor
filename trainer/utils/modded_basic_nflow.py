@@ -360,6 +360,8 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
                 shift = shift + 7.906
             elif self.affine_type == "softplus":
                 shift = shift - 0.5414
+            elif self.affine_type == "atan":
+                shift = shift - 1
         # print(unconstrained_scale, shift)
         return unconstrained_scale, shift
 

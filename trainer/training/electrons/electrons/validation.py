@@ -14,9 +14,13 @@ import corner
 
 from scipy.stats import wasserstein_distance
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "postprocessing"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "postprocessing")
+)
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "utils"))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "extractor"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "extractor")
+)
 
 from postprocessing import postprocessing
 from post_actions_ele import target_dictionary
@@ -73,7 +77,7 @@ def validate(
     # Making DataFrames
 
     reco_columns = [col.replace("M", "") for col in reco_columnsM]
-    gen_ele = [col.replace("M", "") for col in gen_eleM if col.beginswith("M")]
+    gen_ele = [col.replace("M", "") for col in gen_eleM if col.startswith("M")]
 
     gen = np.array(gen).reshape((-1, args.y_dim))
     reco = np.array(reco).reshape((-1, args.x_dim))

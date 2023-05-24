@@ -90,6 +90,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             "hidden_dim_caf": args.hidden_dim_caf,
             "init_identity": args.init_identity,
             "permute_type": args.permute_type,
+            "affine_type": args.affine_type,
         },
     }
 
@@ -124,7 +125,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 device_ids=[args.gpu],
                 output_device=args.gpu,
                 check_reduction=True,
-                find_unused_parameters=True,
+                find_unused_parameters=False,
             )
             args.batch_size = int(args.batch_size / ngpus_per_node)
             args.workers = 0
@@ -276,6 +277,8 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                             loss.item(),
                         )
                     )
+            else: 
+                print("Loss is nan or inf for this batch")
 
         train_loss = (train_loss.item() / len(train_loader.dataset)) * args.world_size
         train_log_p = (train_log_p.item() / len(train_loader.dataset)) * args.world_size

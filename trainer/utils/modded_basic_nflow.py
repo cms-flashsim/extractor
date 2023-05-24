@@ -275,6 +275,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         dropout_probability=0.0,
         use_batch_norm=False,
         init_identity=True,
+        affine_type="sigmoid",
     ):
         self.features = features
         made = made_module.MADE(
@@ -291,11 +292,21 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         )
         self._epsilon = 1e-3
         self.init_identity = init_identity
+        self.affine_type = affine_type
         if init_identity:
             torch.nn.init.constant_(made.final_layer.weight, 0.0)
-            torch.nn.init.constant_(
-                made.final_layer.bias, 0.5414  # the value k to get softplus(k) = 1.0
-            )
+            if self.affine_type == "softplus":
+                torch.nn.init.constant_(
+                    made.final_layer.bias, 0.5414  # the value k to get softplus(k) = 1.0
+                )
+            elif self.affine_type == "sigmoid":
+                torch.nn.init.constant_(
+                    made.final_layer.bias, -7.906  # the value k to get sigmoid(k+1) = 1.0
+                )
+            elif self.affine_type == "atan":
+                torch.nn.init.constant_(
+                    made.final_layer.bias, 1  # the value k to get atan(k) = 1.0
+                )               
 
         super(MaskedAffineAutoregressiveTransformM, self).__init__(made)
 
@@ -306,8 +317,13 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         unconstrained_scale, shift = self._unconstrained_scale_and_shift(
             autoregressive_params
         )
-        # scale = torch.sigmoid(unconstrained_scale + 2.0) + self._epsilon
-        scale = (F.softplus(unconstrained_scale) + self._epsilon).clamp(0, 50)
+        if self.affine_type == "sigmoid":
+            scale = 1000*torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
+        elif self.affine_type == "softplus":
+            scale = (F.softplus(unconstrained_scale)) + self._epsilon # ).clamp(0, 50)
+        elif self.affine_type == "atan":
+            scale = (1000*torch.atan(unconstrained_scale/1000)).clamp(0.001, 50)
+
         log_scale = torch.log(scale)
         outputs = scale * inputs + shift
         logabsdet = torchutils.sum_except_batch(log_scale, num_batch_dims=1)
@@ -317,8 +333,12 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         unconstrained_scale, shift = self._unconstrained_scale_and_shift(
             autoregressive_params
         )
-        # scale = torch.sigmoid(unconstrained_scale + 2.0) + self._epsilon
-        scale = F.softplus(unconstrained_scale) + self._epsilon
+        if self.affine_type == "sigmoid":
+            scale = 1000*torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
+        elif self.affine_type == "softplus":
+            scale = (F.softplus(unconstrained_scale)) + self._epsilon # ).clamp(0, 50)
+        elif self.affine_type == "atan":
+            scale = (1000*torch.atan(unconstrained_scale/1000)).clamp(0.001, 50)
         log_scale = torch.log(scale)
         # print(scale, shift)
         outputs = (inputs - shift) / scale
@@ -336,7 +356,12 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         unconstrained_scale = autoregressive_params[..., 0]
         shift = autoregressive_params[..., 1]
         if self.init_identity:
-            shift = shift - 0.5414
+            if self.affine_type == "sigmoid":
+                shift = shift + 7.906
+            elif self.affine_type == "softplus":
+                shift = shift - 0.5414
+            elif self.affine_type == "atan":
+                shift = shift - 1
         # print(unconstrained_scale, shift)
         return unconstrained_scale, shift
 
@@ -573,6 +598,7 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                 dropout_probability=base_kwargs["dropout_probability_maf"],
                 use_batch_norm=base_kwargs["batch_norm_maf"],
                 init_identity=base_kwargs["init_identity"],
+                affine_type=base_kwargs["affine_type"],
             )
         )
         if base_kwargs["permute_type"] != "no-permutation":

@@ -77,6 +77,7 @@ def validate(
     # Making DataFrames
 
     reco_columns = [col.replace("M", "") for col in reco_columnsM]
+    print(reco_columns)
     gen_jet = [col.replace("M", "") if col.startswith("M") else col for col in gen_jetM]
 
     gen = np.array(gen).reshape((-1, args.y_dim))
@@ -92,6 +93,7 @@ def validate(
 
     gen = pd.DataFrame(data=full_df[gen_jet].values, columns=gen_jet)
     reco = pd.DataFrame(data=full_df[full_sim_cols].values, columns=reco_columns)
+    print(reco.columns)
     samples = pd.DataFrame(data=full_df[reco_columns].values, columns=reco_columns)
 
     # Postprocessing

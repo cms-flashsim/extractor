@@ -22,7 +22,8 @@ from postprocessing import postprocessing
 from post_actions_jet import target_dictionary
 from corner_plots import make_corner
 
-from electrons.columns import gen_jet, reco_columns
+from electrons.columns import gen_jet as gen_jetM
+from electrons.columns import reco_columns as reco_columnsM
 
 
 def validate(
@@ -71,8 +72,8 @@ def validate(
     print(f"Average objs/sec: {len(x_sampled)/np.mean(np.array(times))}")
     # Making DataFrames
 
-    reco_columns = [col.replace("M", "") for col in reco_columns]
-    gen_jet = [col.replace("M", "") for col in gen_jet if col.beginswith("M")]
+    reco_columns = [col.replace("M", "") for col in reco_columnsM]
+    gen_jet = [col.replace("M", "") for col in gen_jetM if col.beginswith("M")]
 
     gen = np.array(gen).reshape((-1, args.y_dim))
     reco = np.array(reco).reshape((-1, args.x_dim))

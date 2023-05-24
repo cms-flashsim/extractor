@@ -162,7 +162,7 @@ class MLP(nn.Module):
         print(outputs.shape)
 
         return outputs
-    
+
 
 class EmbedATT(nn.Module):
     """Use attention on embedding of inputs"""
@@ -205,10 +205,10 @@ class EmbedATT(nn.Module):
 
         if context_features is not None:
             input = in_shape + context_features
-            self.embedding = nn.Linear(input, input*embed_shape)
+            self.embedding = nn.Linear(input, input * embed_shape)
         else:
             input = in_shape
-            self.embedding = nn.Linear(input, input*embed_shape)
+            self.embedding = nn.Linear(input, input * embed_shape)
 
         if self._layer_norm:
             self.layer_norm_layers = nn.ModuleList(
@@ -216,11 +216,14 @@ class EmbedATT(nn.Module):
             )
 
         self.attention = torch.nn.MultiheadAttention(
-            embed_dim=self._embed_shape, num_heads=self.num_heads, batch_first=True)
-        
+            embed_dim=self._embed_shape, num_heads=self.num_heads, batch_first=True
+        )
+
         self._hidden_layers = nn.ModuleList(
             [
-                nn.Linear(self._embed_shape*(self._in_shape+self._context_features), 128),
+                nn.Linear(
+                    self._embed_shape * (self._in_shape + self._context_features), 128
+                ),
                 nn.Linear(128, 128),
                 nn.Linear(128, 128),
             ]
@@ -240,7 +243,9 @@ class EmbedATT(nn.Module):
             temps = temps.view(-1, self._in_shape, self._embed_shape)
         else:
             temps = self.embedding(torch.cat((inputs, context), dim=1))
-            temps = temps.view(-1, self._in_shape + self._context_features, self._embed_shape)
+            temps = temps.view(
+                -1, self._in_shape + self._context_features, self._embed_shape
+            )
         outputs = temps
         # attention
         outputs, _ = self.attention(outputs, outputs, outputs, need_weights=False)
@@ -297,16 +302,18 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
             torch.nn.init.constant_(made.final_layer.weight, 0.0)
             if self.affine_type == "softplus":
                 torch.nn.init.constant_(
-                    made.final_layer.bias, 0.5414  # the value k to get softplus(k) = 1.0
+                    made.final_layer.bias,
+                    0.5414,  # the value k to get softplus(k) = 1.0
                 )
             elif self.affine_type == "sigmoid":
                 torch.nn.init.constant_(
-                    made.final_layer.bias, -7.906  # the value k to get sigmoid(k+1) = 1.0
+                    made.final_layer.bias,
+                    -7.906,  # the value k to get sigmoid(k+1) = 1.0
                 )
             elif self.affine_type == "atan":
                 torch.nn.init.constant_(
                     made.final_layer.bias, 1  # the value k to get atan(k) = 1.0
-                )               
+                )
 
         super(MaskedAffineAutoregressiveTransformM, self).__init__(made)
 
@@ -317,12 +324,13 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         unconstrained_scale, shift = self._unconstrained_scale_and_shift(
             autoregressive_params
         )
+        shift = shift.clamp(-50, 50)
         if self.affine_type == "sigmoid":
-            scale = 1000*torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
+            scale = 1000 * torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
         elif self.affine_type == "softplus":
-            scale = (F.softplus(unconstrained_scale)) + self._epsilon # ).clamp(0, 50)
+            scale = (F.softplus(unconstrained_scale)) + self._epsilon  # ).clamp(0, 50)
         elif self.affine_type == "atan":
-            scale = (1000*torch.atan(unconstrained_scale/1000)).clamp(0.001, 50)
+            scale = (1000 * torch.atan(unconstrained_scale / 1000)).clamp(0.001, 50)
 
         log_scale = torch.log(scale)
         outputs = scale * inputs + shift
@@ -334,11 +342,11 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
             autoregressive_params
         )
         if self.affine_type == "sigmoid":
-            scale = 1000*torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
+            scale = 1000 * torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
         elif self.affine_type == "softplus":
-            scale = (F.softplus(unconstrained_scale)) + self._epsilon # ).clamp(0, 50)
+            scale = (F.softplus(unconstrained_scale)) + self._epsilon  # ).clamp(0, 50)
         elif self.affine_type == "atan":
-            scale = (1000*torch.atan(unconstrained_scale/1000)).clamp(0.001, 50)
+            scale = (1000 * torch.atan(unconstrained_scale / 1000)).clamp(0.001, 50)
         log_scale = torch.log(scale)
         # print(scale, shift)
         outputs = (inputs - shift) / scale
@@ -642,7 +650,6 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                             activate_output=False,
                             batch_norm=base_kwargs["batch_norm_caf"],
                             dropout_probability=base_kwargs["dropout_probability_caf"],
-                            
                         )
                     ),
                 )
@@ -667,13 +674,12 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                             layer_norm=base_kwargs["batch_norm_caf"],
                             dropout_probability=base_kwargs["dropout_probability_caf"],
                             num_heads=base_kwargs["att_num_heads"],
-                            
                         )
                     ),
                 )
             )
         if base_kwargs["permute_type"] != "no-permutation":
-                transform.append(create_random_transform(param_dim=input_dim))
+            transform.append(create_random_transform(param_dim=input_dim))
 
     transform_fnal = transforms.CompositeTransform(transform)
 

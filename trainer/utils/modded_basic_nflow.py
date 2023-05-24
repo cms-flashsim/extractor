@@ -295,9 +295,14 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         self.affine_type = affine_type
         if init_identity:
             torch.nn.init.constant_(made.final_layer.weight, 0.0)
-            torch.nn.init.constant_(
-                made.final_layer.bias, 0.5414  # the value k to get softplus(k) = 1.0
-            )
+            if self.affine_type == "softplus":
+                torch.nn.init.constant_(
+                    made.final_layer.bias, 0.5414  # the value k to get softplus(k) = 1.0
+                )
+            elif self.affine_type == "sigmoid":
+                torch.nn.init.constant_(
+                    made.final_layer.bias, -15.0  # the value k to get sigmoid(k+1) = 0.0
+                )
 
         super(MaskedAffineAutoregressiveTransformM, self).__init__(made)
 
@@ -343,7 +348,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         shift = autoregressive_params[..., 1]
         if self.init_identity:
             if self.affine_type == "sigmoid":
-                shift = shift + 20
+                shift = shift + 15.0
             elif self.affine_type == "softplus":
                 shift = shift - 0.5414
         # print(unconstrained_scale, shift)
@@ -582,6 +587,7 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                 dropout_probability=base_kwargs["dropout_probability_maf"],
                 use_batch_norm=base_kwargs["batch_norm_maf"],
                 init_identity=base_kwargs["init_identity"],
+                affine_type=base_kwargs["affine_type"],
             )
         )
         if base_kwargs["permute_type"] != "no-permutation":

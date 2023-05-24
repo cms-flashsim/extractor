@@ -234,7 +234,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         train_loss = 0.0
         train_log_p = 0.0
         train_log_det = 0.0
-        for batch_idx, (z, y) in enumerate(train_loader):
+        for batch_idx, (x, y) in enumerate(train_loader):
             ddp_model.train()
             optimizer.zero_grad()
 

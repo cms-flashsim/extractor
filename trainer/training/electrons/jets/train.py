@@ -13,20 +13,17 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from tensorboardX import SummaryWriter
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "utils"))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "models"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "utils"))
 
-from dataset import ElectronDataset
+from dataset import ObjectDataset
 from modded_basic_nflow import (
-    create_NDE_model,
     create_mixture_flow_model,
-    load_model,
     save_model,
     load_mixture_model,
 )
 
 from args import get_args
-from validation import validate_electrons
+from validation import validate
 
 
 def init_np_seed(worker_id):
@@ -158,14 +155,14 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
     dirpath = os.path.dirname(__file__)
 
-    tr_dataset = ElectronDataset(
+    tr_dataset = ObjectDataset(
         [os.path.join(dirpath, "MElectrons_jet.hdf5")],
         z_dim=args.zdim,
         y_dim=args.y_dim,
         start=0,
         limit=args.train_limit,
     )
-    te_dataset = ElectronDataset(
+    te_dataset = ObjectDataset(
         [os.path.join(dirpath, "MElectrons_jet.hdf5")],
         z_dim=args.zdim,
         y_dim=args.y_dim,
@@ -366,7 +363,7 @@ def main():
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    val_func = validate_electrons
+    val_func = validate
     ngpus_per_node = torch.cuda.device_count()
     if args.distributed:
         args.world_size = ngpus_per_node * args.world_size

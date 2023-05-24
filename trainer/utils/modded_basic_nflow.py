@@ -303,6 +303,10 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
                 torch.nn.init.constant_(
                     made.final_layer.bias, -7.906  # the value k to get sigmoid(k+1) = 1.0
                 )
+            elif self.affine_type == "atan":
+                torch.nn.init.constant_(
+                    made.final_layer.bias, 1  # the value k to get atan(k) = 1.0
+                )               
 
         super(MaskedAffineAutoregressiveTransformM, self).__init__(made)
 
@@ -317,6 +321,9 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
             scale = 1000*torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
         elif self.affine_type == "softplus":
             scale = (F.softplus(unconstrained_scale) + self._epsilon).clamp(0, 50)
+        elif self.affine_type == "atan":
+            scale = 1000*torch.atan(unconstrained_scale/1000) + self._epsilon
+
         log_scale = torch.log(scale)
         outputs = scale * inputs + shift
         logabsdet = torchutils.sum_except_batch(log_scale, num_batch_dims=1)
@@ -330,6 +337,8 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
             scale = 1000*torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
         elif self.affine_type == "softplus":
             scale = (F.softplus(unconstrained_scale) + self._epsilon).clamp(0, 50)
+        elif self.affine_type == "atan":
+            scale = 1000*torch.atan(unconstrained_scale/1000) + self._epsilon
         log_scale = torch.log(scale)
         # print(scale, shift)
         outputs = (inputs - shift) / scale

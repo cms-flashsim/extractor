@@ -77,7 +77,7 @@ def validate(
     # Making DataFrames
 
     reco_columns = [col.replace("M", "") for col in reco_columnsM]
-    gen_jet = [col.replace("M", "") for col in gen_jetM if col.startswith("M")]
+    gen_jet = [col.replace("M", "") for col in gen_jetM if col.startswith("M") else col]
 
     gen = np.array(gen).reshape((-1, args.y_dim))
     reco = np.array(reco).reshape((-1, args.x_dim))

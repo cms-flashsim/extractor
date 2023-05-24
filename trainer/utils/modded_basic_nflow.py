@@ -336,9 +336,9 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         if self.affine_type == "sigmoid":
             scale = 1000*torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
         elif self.affine_type == "softplus":
-            scale = (F.softplus(unconstrained_scale) + self._epsilon).clamp(0, 50)
+            scale = (F.softplus(unconstrained_scale)) + self._epsilon # ).clamp(0, 50)
         elif self.affine_type == "atan":
-            scale = (1000*torch.atan(unconstrained_scale/1000) + self._epsilon).clamp(0.001, 50)
+            scale = (1000*torch.atan(unconstrained_scale/1000)).clamp(0.001, 50)
         log_scale = torch.log(scale)
         # print(scale, shift)
         outputs = (inputs - shift) / scale

@@ -26,7 +26,7 @@ from modded_basic_nflow import (
 )
 
 from args import get_args
-from validation import validate_electrons
+from validation import validate
 
 
 def init_np_seed(worker_id):
@@ -242,7 +242,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             optimizer.zero_grad()
 
             if gpu is not None:
-                z = z.cuda(args.gpu, non_blocking=True)
+                x = x.cuda(args.gpu, non_blocking=True)
                 y = y.cuda(args.gpu, non_blocking=True)
 
             # Compute log prob
@@ -297,9 +297,9 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             test_log_p = 0.0
             test_log_det = 0.0
 
-            for z, y in test_loader:
+            for x, y in test_loader:
                 if gpu is not None:
-                    z = z.cuda(args.gpu, non_blocking=True)
+                    x = x.cuda(args.gpu, non_blocking=True)
                     y = y.cuda(args.gpu, non_blocking=True)
 
                 # Compute log prob
@@ -372,7 +372,7 @@ def main():
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    val_func = validate_electrons
+    val_func = validate
     ngpus_per_node = torch.cuda.device_count()
     if args.distributed:
         args.world_size = ngpus_per_node * args.world_size

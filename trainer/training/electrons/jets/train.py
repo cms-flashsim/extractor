@@ -226,16 +226,16 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         train_loss = 0.0
         train_log_p = 0.0
         train_log_det = 0.0
-        for batch_idx, (z, y) in enumerate(train_loader):
+        for batch_idx, (x, y) in enumerate(train_loader):
             ddp_model.train()
             optimizer.zero_grad()
 
             if gpu is not None:
-                z = z.cuda(args.gpu, non_blocking=True)
+                x = x.cuda(args.gpu, non_blocking=True)
                 y = y.cuda(args.gpu, non_blocking=True)
 
             # Compute log prob
-            log_p, log_det = ddp_model(z, context=y)
+            log_p, log_det = ddp_model(x, context=y)
             loss = -log_p - log_det
 
             if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
@@ -250,20 +250,20 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 loss.backward()
                 optimizer.step()
 
-                if (output_freq is not None) and (batch_idx % output_freq == 0):
-                    duration = time.time() - start_time
-                    start_time = time.time()
-                    print(
-                        "[Rank %d] Epoch %d Batch [%2d/%2d] Time [%3.2fs] Loss %2.5f"
-                        % (
-                            args.rank,
-                            epoch,
-                            batch_idx,
-                            len(train_loader),
-                            duration,
-                            loss.item(),
-                        )
+            if (output_freq is not None) and (batch_idx % output_freq == 0):
+                duration = time.time() - start_time
+                start_time = time.time()
+                print(
+                    "[Rank %d] Epoch %d Batch [%2d/%2d] Time [%3.2fs] Loss %2.5f"
+                    % (
+                        args.rank,
+                        epoch,
+                        batch_idx,
+                        len(train_loader),
+                        duration,
+                        loss.item(),
                     )
+                )
 
         train_loss = (train_loss.item() / len(train_loader.dataset)) * args.world_size
         train_log_p = (train_log_p.item() / len(train_loader.dataset)) * args.world_size
@@ -286,20 +286,20 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             test_log_p = 0.0
             test_log_det = 0.0
 
-            for z, y in test_loader:
+            for x, y in test_loader:
                 if gpu is not None:
-                    z = z.cuda(args.gpu, non_blocking=True)
+                    x = x.cuda(args.gpu, non_blocking=True)
                     y = y.cuda(args.gpu, non_blocking=True)
 
                 # Compute log prob
                 log_p, log_det = ddp_model(z, context=y)
                 loss = -log_p - log_det
 
-                if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
-                    # Keep track of total loss.
-                    test_loss += (loss.detach()).sum()
-                    test_log_p += (-log_p.detach()).sum()
-                    test_log_det += (-log_det.detach()).sum()
+                # if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
+                # Keep track of total loss.
+                test_loss += (loss.detach()).sum()
+                test_log_p += (-log_p.detach()).sum()
+                test_log_det += (-log_det.detach()).sum()
 
             test_loss = test_loss.item() / len(test_loader.dataset)
             test_log_p = test_log_p.item() / len(test_loader.dataset)

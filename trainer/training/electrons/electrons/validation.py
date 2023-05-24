@@ -14,19 +14,19 @@ import corner
 
 from scipy.stats import wasserstein_distance
 
-sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "..", "postprocessing")
-)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "postprocessing"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "utils"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "extractor"))
 
 from postprocessing import postprocessing
 from post_actions_ele import target_dictionary
 from corner_plots import make_corner
 
-from columns import gen_ele, reco_columns
+from electrons.columns import gen_ele as gen_eleM
+from electrons.columns import reco_columns as reco_columnsM
 
 
-def validate_electrons(
+def validate(
     test_loader,
     model,
     epoch,
@@ -34,7 +34,6 @@ def validate_electrons(
     save_dir,
     args,
     device,
-    clf_loaders=None,
 ):
     if writer is not None:
         save_dir = os.path.join(save_dir, f"./figures/validation@epoch-{epoch}")
@@ -52,41 +51,62 @@ def validate_electrons(
         samples = []
 
         for bid, data in enumerate(test_loader):
-            z, y = data[0], data[1]
+            x, y = data[0], data[1]
             inputs_y = y.cuda(device)
             start = time.time()
-            z_sampled = model.sample(
+            x_sampled = model.sample(
                 num_samples=1, context=inputs_y.view(-1, args.y_dim)
             )
             t = time.time() - start
-            print(f"Time for sampling: {len(test_loader) / t} [Hz]")
+            print(f"Objects per second: {len(x_sampled) / t} [Hz]")
             times.append(t)
 
-            z_sampled = z_sampled.cpu().detach().numpy()
+            x_sampled = x_sampled.cpu().detach().numpy()
             inputs_y = inputs_y.cpu().detach().numpy()
-            z = z.cpu().detach().numpy()
-            z_sampled = z_sampled.reshape(-1, args.zdim)
+            x = x.cpu().detach().numpy()
+            x_sampled = x_sampled.reshape(-1, args.x_dim)
             gen.append(inputs_y)
-            reco.append(z)
-            samples.append(z_sampled)
+            reco.append(x)
+            samples.append(x_sampled)
 
-    print(f"Average time for sampling: {np.mean(np.array(times))}")
-
+    print(f"Average objs/sec: {len(x_sampled)/np.mean(np.array(times))}")
     # Making DataFrames
 
-    gen = np.array(gen).reshape((-1, args.y_dim))
-    reco = np.array(reco).reshape((-1, args.zdim))
-    samples = np.array(samples).reshape((-1, args.zdim))
+    reco_columns = [col.replace("M", "") for col in reco_columnsM]
+    gen_ele = [col.replace("M", "") for col in gen_eleM if col.beginswith("M")]
 
-    gen = pd.DataFrame(data=gen, columns=gen_ele)
-    reco = pd.DataFrame(data=reco, columns=reco_columns)
-    samples = pd.DataFrame(data=samples, columns=reco_columns)
+    gen = np.array(gen).reshape((-1, args.y_dim))
+    reco = np.array(reco).reshape((-1, args.x_dim))
+    samples = np.array(samples).reshape((-1, args.x_dim))
+
+    fullarray = np.concatenate((gen, reco, samples), axis=1)
+    full_sim_cols = ["Full_" + x for x in reco_columns]
+    full_df = pd.DataFrame(
+        data=fullarray, columns=gen_ele + full_sim_cols + reco_columns
+    )
+    full_df.to_pickle(os.path.join(save_dir, "./full_ele_ele_df.pkl"))
+
+    gen = pd.DataFrame(data=full_df[gen_ele].values, columns=gen_ele)
+    reco = pd.DataFrame(data=full_df[full_sim_cols].values, columns=reco_columns)
+    samples = pd.DataFrame(data=full_df[reco_columns].values, columns=reco_columns)
 
     # Postprocessing
 
-    reco = postprocessing(reco, target_dictionary, "scale_factors_ele.json")
+    reco = postprocessing(
+        reco,
+        gen,
+        target_dictionary,
+        "scale_factors_ele_ele.json",
+        saturate_ranges_path="ranges_ele_ele.json",
+    )
 
-    samples = postprocessing(samples, target_dictionary, "scale_factors_ele.json")
+    samples = postprocessing(
+        samples,
+        gen,
+        target_dictionary,
+        "scale_factors_ele_ele.json",
+        saturate_ranges_path="ranges_ele_ele.json",
+    )
 
     # New DataFrame containing FullSim-range saturated samples
 
@@ -153,33 +173,33 @@ def validate_electrons(
     # Return to physical kinematic variables
 
     for df in [reco, samples, saturated_samples]:
-        df["MElectron_pt"] = df["MElectron_ptRatio"] * gen["MGenElectron_pt"]
-        df["MElectron_eta"] = df["MElectron_etaMinusGen"] + gen["MGenElectron_eta"]
-        df["MElectron_phi"] = df["MElectron_phiMinusGen"] + gen["MGenElectron_phi"]
+        df["Electron_pt"] = df["Electron_ptRatio"] * gen["GenElectron_pt"]
+        df["Electron_eta"] = df["Electron_etaMinusGen"] + gen["GenElectron_eta"]
+        df["Electron_phi"] = df["Electron_phiMinusGen"] + gen["GenElectron_phi"]
 
     # Zoom-in for high ws distributions
 
     incriminated = [
-        ["MElectron_dr03HcalDepth1TowerSumEt", [0, 10]],
-        ["MElectron_dr03TkSumPt", [0, 10]],
-        ["MElectron_dr03TkSumPtHEEP", [0, 10]],
-        ["MElectron_dr03EcalRecHitSumEt", [0, 10]],
-        ["MElectron_dxyErr", [0, 0.1]],
-        ["MElectron_dzErr", [0, 0.2]],
-        ["MElectron_energyErr", [0, 5]],
-        ["MElectron_hoe", [0, 0.4]],
-        ["MElectron_ip3d", [0, 0.1]],
-        ["MElectron_jetPtRelv2", [0, 10]],
-        ["MElectron_jetRelIso", [0, 2]],
-        ["MElectron_miniPFRelIso_all", [0, 1]],
-        ["MElectron_miniPFRelIso_chg", [0, 1]],
-        ["MElectron_pfRelIso03_all", [0, 0.5]],
-        ["MElectron_pfRelIso03_chg", [0, 0.5]],
-        ["MElectron_sieie", [0.005, 0.02]],
-        ["MElectron_sip3d", [0, 10]],
-        ["MElectron_pt", [0, 100]],
-        ["MElectron_eta", [-3, 3]],
-        ["MElectron_phi", [-3.14, 3.14]],
+        ["Electron_dr03HcalDepth1TowerSumEt", [0, 10]],
+        ["Electron_dr03TkSumPt", [0, 10]],
+        ["Electron_dr03TkSumPtHEEP", [0, 10]],
+        ["Electron_dr03EcalRecHitSumEt", [0, 10]],
+        ["Electron_dxyErr", [0, 0.1]],
+        ["Electron_dzErr", [0, 0.2]],
+        ["Electron_energyErr", [0, 5]],
+        ["Electron_hoe", [0, 0.4]],
+        ["Electron_ip3d", [0, 0.1]],
+        ["Electron_jetPtRelv2", [0, 10]],
+        ["Electron_jetRelIso", [0, 2]],
+        ["Electron_miniPFRelIso_all", [0, 1]],
+        ["Electron_miniPFRelIso_chg", [0, 1]],
+        ["Electron_pfRelIso03_all", [0, 0.5]],
+        ["Electron_pfRelIso03_chg", [0, 0.5]],
+        ["Electron_sieie", [0.005, 0.02]],
+        ["Electron_sip3d", [0, 10]],
+        ["Electron_pt", [0, 100]],
+        ["Electron_eta", [-3, 3]],
+        ["Electron_phi", [-3.14, 3.14]],
     ]
     for elm in incriminated:
         column = elm[0]
@@ -229,7 +249,7 @@ def validate_electrons(
 
     # Return to physical kinematic variables
 
-    physical = ["MElectron_pt", "MElectron_eta", "MElectron_phi"]
+    physical = ["Electron_pt", "Electron_eta", "Electron_phi"]
 
     for column in physical:
         ws = wasserstein_distance(reco[column], samples[column])
@@ -282,11 +302,11 @@ def validate_electrons(
 
     # Conditioning
 
-    targets = ["MElectron_ip3d", "MElectron_sip3d", "MElectron_pfRelIso03_all"]
+    targets = ["Electron_ip3d", "Electron_sip3d", "Electron_pfRelIso03_all"]
 
     ranges = [[0, 0.1], [0, 10], [0, 0.5]]
 
-    conds = [f"MGenElectron_statusFlag{i}" for i in (0, 2, 7)]
+    conds = [f"GenElectron_statusFlag{i}" for i in (0, 2, 7)]
     conds.append("ClosestJet_EncodedPartonFlavour_b")
 
     names = [
@@ -373,7 +393,7 @@ def validate_electrons(
             bins=50,
             range=rangeR,
             histtype="step",
-            label="ClosestJet_partonFlavour_is_guds",
+            label="ClosestJet partonFlavour is udsg",
             color="tab:purple",
         )
 
@@ -385,7 +405,7 @@ def validate_electrons(
             bins=50,
             range=rangeR,
             histtype="step",
-            label="ClosestJet_partonFlavour_is_guds",
+            label="ClosestJet partonFlavour is udsg",
             color="tab:purple",
         )
         del full, flash
@@ -494,7 +514,7 @@ def validate_electrons(
             bins=50,
             range=rangeR,
             histtype="step",
-            label="ClosestJet_partonFlavour_is_guds",
+            label="ClosestJet partonFlavour is udsg",
             color="tab:purple",
             density=True,
         )
@@ -513,7 +533,7 @@ def validate_electrons(
             bins=50,
             range=rangeR,
             histtype="step",
-            label="ClosestJet_partonFlavour_is_guds",
+            label="ClosestJet_partonFlavour is udsg",
             color="tab:purple",
             density=True,
         )
@@ -531,17 +551,17 @@ def validate_electrons(
     # Isolation
 
     labels = [
-        "MElectron_pt",
-        "MElectron_eta",
-        "MElectron_jetRelIso",
-        "MElectron_miniPFRelIso_all",
-        "MElectron_miniPFRelIso_chg",
-        # "MElectron_mvaFall17V1Iso",
-        # "MElectron_mvaFall17V1noIso",
-        "MElectron_mvaFall17V2Iso",
-        "MElectron_mvaFall17V2noIso",
-        "MElectron_pfRelIso03_all",
-        "MElectron_pfRelIso03_chg",
+        "Electron_pt",
+        "Electron_eta",
+        "Electron_jetRelIso",
+        "Electron_miniPFRelIso_all",
+        "Electron_miniPFRelIso_chg",
+        # "Electron_mvaFall17V1Iso",
+        # "Electron_mvaFall17V1noIso",
+        "Electron_mvaFall17V2Iso",
+        "Electron_mvaFall17V2noIso",
+        "Electron_pfRelIso03_all",
+        "Electron_pfRelIso03_chg",
     ]
 
     ranges = [
@@ -565,14 +585,14 @@ def validate_electrons(
     # Impact parameter (range)
 
     labels = [
-        "MElectron_pt",
-        "MElectron_eta",
-        "MElectron_ip3d",
-        "MElectron_sip3d",
-        "MElectron_dxy",
-        "MElectron_dxyErr",
-        "MElectron_dz",
-        "MElectron_dzErr",
+        "Electron_pt",
+        "Electron_eta",
+        "Electron_ip3d",
+        "Electron_sip3d",
+        "Electron_dxy",
+        "Electron_dxyErr",
+        "Electron_dz",
+        "Electron_dzErr",
     ]
 
     ranges = [
@@ -593,15 +613,15 @@ def validate_electrons(
 
     # Impact parameter comparison
 
-    reco["MElectron_sqrt_xy_z"] = np.sqrt(
-        (reco["MElectron_dxy"].values) ** 2 + (reco["MElectron_dz"].values) ** 2
+    reco["Electron_sqrt_xy_z"] = np.sqrt(
+        (reco["Electron_dxy"].values) ** 2 + (reco["Electron_dz"].values) ** 2
     )
-    saturated_samples["MElectron_sqrt_xy_z"] = np.sqrt(
-        (saturated_samples["MElectron_dxy"].values) ** 2
-        + (saturated_samples["MElectron_dz"].values) ** 2
+    saturated_samples["Electron_sqrt_xy_z"] = np.sqrt(
+        (saturated_samples["Electron_dxy"].values) ** 2
+        + (saturated_samples["Electron_dz"].values) ** 2
     )
 
-    labels = ["MElectron_sqrt_xy_z", "MElectron_ip3d"]
+    labels = ["Electron_sqrt_xy_z", "Electron_ip3d"]
 
     ranges = [(0, 0.2), (0, 0.2)]
 
@@ -619,7 +639,7 @@ def validate_electrons(
 
     # Kinematics
 
-    labels = ["MElectron_pt", "MElectron_eta", "MElectron_phi"]
+    labels = ["Electron_pt", "Electron_eta", "Electron_phi"]
 
     ranges = [(0, 200), (-4, 4), (-3.2, 3.2)]
 
@@ -630,14 +650,14 @@ def validate_electrons(
     # Supercluster
 
     labels = [
-        "MElectron_pt",
-        "MElectron_eta",
-        "MElectron_sieie",
-        "MElectron_r9",
-        # "MElectron_mvaFall17V1Iso",
-        # "MElectron_mvaFall17V1noIso",
-        "MElectron_mvaFall17V2Iso",
-        "MElectron_mvaFall17V2noIso",
+        "Electron_pt",
+        "Electron_eta",
+        "Electron_sieie",
+        "Electron_r9",
+        # "Electron_mvaFall17V1Iso",
+        # "Electron_mvaFall17V1noIso",
+        "Electron_mvaFall17V2Iso",
+        "Electron_mvaFall17V2noIso",
     ]
 
     ranges = [

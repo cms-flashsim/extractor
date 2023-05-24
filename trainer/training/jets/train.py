@@ -261,6 +261,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 loss = (loss).mean()
 
                 loss.backward()
+                optimizer.step()
 
                 if (output_freq is not None) and (batch_idx % output_freq == 0):
                     duration = time.time() - start_time
@@ -278,9 +279,6 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                     )
             else: 
                 print("Loss is nan or inf for this batch")
-            
-            optimizer.step()
-
 
         train_loss = (train_loss.item() / len(train_loader.dataset)) * args.world_size
         train_log_p = (train_log_p.item() / len(train_loader.dataset)) * args.world_size

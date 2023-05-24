@@ -301,7 +301,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
                 )
             elif self.affine_type == "sigmoid":
                 torch.nn.init.constant_(
-                    made.final_layer.bias, -15.0  # the value k to get sigmoid(k+1) = 0.0
+                    made.final_layer.bias, -7.906  # the value k to get sigmoid(k+1) = 1.0
                 )
 
         super(MaskedAffineAutoregressiveTransformM, self).__init__(made)
@@ -348,7 +348,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         shift = autoregressive_params[..., 1]
         if self.init_identity:
             if self.affine_type == "sigmoid":
-                shift = shift + 15.0
+                shift = shift + 7.906
             elif self.affine_type == "softplus":
                 shift = shift - 0.5414
         # print(unconstrained_scale, shift)

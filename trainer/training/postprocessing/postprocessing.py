@@ -232,6 +232,7 @@ def postprocessing(
     if scale_file_path != None:
         for column_name in df.columns:
             val = df[column_name].values
+            print("Column name: ", column_name)
             print("Number of nans in val before postprocessing: ", np.sum(np.isnan(val)))
             if column_name in scale_dict.keys():
                 df[column_name] = restore_range(column_name, scale_dict, df)

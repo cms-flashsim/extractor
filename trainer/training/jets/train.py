@@ -277,6 +277,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                             loss.item(),
                         )
                     )
+            else: print("Loss is nan or inf for this batch")
 
         train_loss = (train_loss.item() / len(train_loader.dataset)) * args.world_size
         train_log_p = (train_log_p.item() / len(train_loader.dataset)) * args.world_size

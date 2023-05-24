@@ -243,7 +243,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 y = y.cuda(args.gpu, non_blocking=True)
 
             # Compute log prob
-            log_p, log_det = ddp_model(z, context=y)
+            log_p, log_det = ddp_model(x, context=y)
             loss = -log_p - log_det
 
             if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
@@ -300,7 +300,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                     y = y.cuda(args.gpu, non_blocking=True)
 
                 # Compute log prob
-                log_p, log_det = ddp_model(z, context=y)
+                log_p, log_det = ddp_model(x, context=y)
                 loss = -log_p - log_det
 
                 # Keep track of total loss.

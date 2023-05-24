@@ -12,7 +12,7 @@ from columns import (
     eff_pho,
     eff_jet,
 )
-module_path = os.path.join(os.path.dirname(__file__), "extraction.h")
+module_path = os.path.join(os.path.dirname(__file__), "electrons.h")
 
 ROOT.gInterpreter.ProcessLine(f'#include "{module_path}"')
 

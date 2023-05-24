@@ -2,7 +2,7 @@ import os
 import json
 import ROOT
 
-from extract import make_files
+from electrons import make_files
 
 # root = "/gpfs/ddn/srm/cms//store/mc/RunIIAutumn18NanoAODv6/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/Nano25Oct2019_102X_upgrade2018_realistic_v20_ext1-v1/"
 # ttbar_training_files = [
@@ -36,6 +36,9 @@ ttbar_training_files = [
 
 
 file_paths = [os.path.join(root, f) for f in ttbar_training_files]
+
+if not os.path.exists(os.path.join(os.path.dirname(__file__), "dataset")):
+    os.mkdir(os.path.join(os.path.dirname(__file__), "dataset"))
 
 extracted = [os.path.join("dataset", f"MElectrons_{i}") for i in range(len(file_paths))]
 

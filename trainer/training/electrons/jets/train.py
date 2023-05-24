@@ -69,7 +69,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
     # define model
     flow_param_dict = {
-        "input_dim": args.zdim,
+        "input_dim": args.x_dim,
         "context_dim": args.y_dim,
         "base_kwargs": {
             "num_steps_maf": args.num_steps_maf,
@@ -157,14 +157,14 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
     tr_dataset = ObjectDataset(
         [os.path.join(dirpath, "MElectrons_jet.hdf5")],
-        z_dim=args.zdim,
+        z_dim=args.x_dim,
         y_dim=args.y_dim,
         start=0,
         limit=args.train_limit,
     )
     te_dataset = ObjectDataset(
         [os.path.join(dirpath, "MElectrons_jet.hdf5")],
-        z_dim=args.zdim,
+        z_dim=args.x_dim,
         y_dim=args.y_dim,
         start=args.train_limit,
         limit=args.test_limit,

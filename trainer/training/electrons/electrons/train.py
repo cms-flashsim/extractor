@@ -89,6 +89,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             # "mask_type": args.mask_type,
             "init_identity": args.init_identity,
             "permute_type": args.permute_type,
+            "affine_type": args.affine_type,
         },
     }
 
@@ -231,11 +232,14 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             writer.add_scalar("lr/optimizer", scheduler.get_last_lr(), epoch)
 
         # train for one epoch
-        train_loss = 0.0
-        train_log_p = 0.0
-        train_log_det = 0.0
+        train_loss = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+        train_log_p = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+        train_log_det = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+
+        ddp_model.train()
+        model.train()
+
         for batch_idx, (x, y) in enumerate(train_loader):
-            ddp_model.train()
             optimizer.zero_grad()
 
             if gpu is not None:
@@ -258,20 +262,22 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 loss.backward()
                 optimizer.step()
 
-            if (output_freq is not None) and (batch_idx % output_freq == 0):
-                duration = time.time() - start_time
-                start_time = time.time()
-                print(
-                    "[Rank %d] Epoch %d Batch [%2d/%2d] Time [%3.2fs] Loss %2.5f"
-                    % (
-                        args.rank,
-                        epoch,
-                        batch_idx,
-                        len(train_loader),
-                        duration,
-                        loss.item(),
+                if (output_freq is not None) and (batch_idx % output_freq == 0):
+                    duration = time.time() - start_time
+                    start_time = time.time()
+                    print(
+                        "[Rank %d] Epoch %d Batch [%2d/%2d] Time [%3.2fs] Loss %2.5f"
+                        % (
+                            args.rank,
+                            epoch,
+                            batch_idx,
+                            len(train_loader),
+                            duration,
+                            loss.item(),
+                        )
                     )
-                )
+            else:
+                print("Loss is nan or inf for this batch")
 
         train_loss = (train_loss.item() / len(train_loader.dataset)) * args.world_size
         train_log_p = (train_log_p.item() / len(train_loader.dataset)) * args.world_size
@@ -290,9 +296,9 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         # evaluate on the validation set
         with torch.no_grad():
             ddp_model.eval()
-            test_loss = 0.0
-            test_log_p = 0.0
-            test_log_det = 0.0
+            test_loss = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+            test_log_p = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+            test_log_det = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
 
             for x, y in test_loader:
                 if gpu is not None:
@@ -303,10 +309,11 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 log_p, log_det = ddp_model(x, context=y)
                 loss = -log_p - log_det
 
-                # Keep track of total loss.
-                test_loss += (loss.detach()).sum()
-                test_log_p += (-log_p.detach()).sum()
-                test_log_det += (-log_det.detach()).sum()
+                if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
+                    # Keep track of total loss.
+                    test_loss += (loss.detach()).sum()
+                    test_log_p += (-log_p.detach()).sum()
+                    test_log_det += (-log_det.detach()).sum()
 
             test_loss = test_loss.item() / len(test_loader.dataset)
             test_log_p = test_log_p.item() / len(test_loader.dataset)

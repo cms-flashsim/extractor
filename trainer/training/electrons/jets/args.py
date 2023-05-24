@@ -12,9 +12,17 @@ def add_args(parser):
 
     # flow options
     parser.add_argument("--num_steps_maf", type=int, default=20)
+    parser.add_argument(
+        "--affine_type",
+        type=str,
+        default="softplus",
+        choices=["sigmoid", "softplus", "atan"],
+    )
     parser.add_argument("--num_steps_arqs", type=int, default=0)
     parser.add_argument("--num_steps_caf", type=int, default=0)
-    parser.add_argument("--coupling_net", type=str, default="mlp", choices=["mlp", "att"])
+    parser.add_argument(
+        "--coupling_net", type=str, default="mlp", choices=["mlp", "att"]
+    )
     parser.add_argument("--att_embed_shape", type=int, default=64)
     parser.add_argument("--att_num_heads", type=int, default=4)
     parser.add_argument("--num_transform_blocks_maf", type=int, default=8)

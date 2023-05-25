@@ -42,7 +42,7 @@ target_dictionary = {
     "Electron_eInvMinusPInv": [["i", np.tan, [10, 0]]],
     "Electron_energyErr": [["i", np.expm1, [1, 0]]],
     "Electron_etaMinusGen": [["i", np.tan, [10, 0]]],
-    "Electron_hoe": [["d", [-np.inf, -6]], np.log(1e-3), ["i", np.exp, [1, 1e-3]]],
+    "Electron_hoe": [["d", [-np.inf, -6], np.log(1e-3)], ["i", np.exp, [1, 1e-3]]],
     "Electron_ip3d": [["i", np.exp, [1, 1e-3]]],
     "Electron_isPFcand": [["d", None, None]],
     "Electron_jetPtRelv2": [["i", np.expm1, [1, 0]]],

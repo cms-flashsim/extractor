@@ -306,7 +306,7 @@ def validate(
 
     # Conditioning
 
-    targets = ["Electron_ip3d", "Electron_sip3d", "Electron_pfRelIso03"]
+    targets = ["Electron_ip3d", "Electron_sip3d", "Electron_pfRelIso03_all"]
 
     ranges = [[0, 0.1], [0, 10], [0, 5]]
 

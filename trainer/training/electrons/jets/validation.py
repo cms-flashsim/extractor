@@ -3,6 +3,8 @@ import sys
 import json
 
 import torch
+
+torch.autograd.set_detect_anomaly(True)
 import time
 
 import numpy as np
@@ -78,7 +80,9 @@ def validate(
 
     reco_columns = [col.replace("M", "", 1) for col in reco_columnsM]
     print(reco_columns)
-    gen_jet = [col.replace("M", "", 1) if col.startswith("M") else col for col in gen_jetM]
+    gen_jet = [
+        col.replace("M", "", 1) if col.startswith("M") else col for col in gen_jetM
+    ]
 
     gen = np.array(gen).reshape((-1, args.y_dim))
     reco = np.array(reco).reshape((-1, args.x_dim))

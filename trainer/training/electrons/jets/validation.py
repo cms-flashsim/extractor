@@ -51,29 +51,27 @@ def validate(
     times = []
     model.eval()
     # Generate samples
-    with torch.no_grad():
-        gen = []
-        reco = []
-        samples = []
+    # with torch.no_grad():
+    gen = []
+    reco = []
+    samples = []
 
-        for bid, data in enumerate(test_loader):
-            x, y = data[0], data[1]
-            inputs_y = y.cuda(device)
-            start = time.time()
-            x_sampled = model.sample(
-                num_samples=1, context=inputs_y.view(-1, args.y_dim)
-            )
-            t = time.time() - start
-            print(f"Objects per second: {len(x_sampled) / t} [Hz]")
-            times.append(t)
+    for bid, data in enumerate(test_loader):
+        x, y = data[0], data[1]
+        inputs_y = y.cuda(device)
+        start = time.time()
+        x_sampled = model.sample(num_samples=1, context=inputs_y.view(-1, args.y_dim))
+        t = time.time() - start
+        print(f"Objects per second: {len(x_sampled) / t} [Hz]")
+        times.append(t)
 
-            x_sampled = x_sampled.cpu().detach().numpy()
-            inputs_y = inputs_y.cpu().detach().numpy()
-            x = x.cpu().detach().numpy()
-            x_sampled = x_sampled.reshape(-1, args.x_dim)
-            gen.append(inputs_y)
-            reco.append(x)
-            samples.append(x_sampled)
+        x_sampled = x_sampled.cpu().detach().numpy()
+        inputs_y = inputs_y.cpu().detach().numpy()
+        x = x.cpu().detach().numpy()
+        x_sampled = x_sampled.reshape(-1, args.x_dim)
+        gen.append(inputs_y)
+        reco.append(x)
+        samples.append(x_sampled)
 
     print(f"Average objs/sec: {len(x_sampled)/np.mean(np.array(times))}")
     # Making DataFrames

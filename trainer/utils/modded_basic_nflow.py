@@ -334,6 +334,9 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
 
         log_scale = torch.log(scale)
         outputs = scale * inputs + shift
+        nan_idx = torch.isnan(outputs)
+        if nan_idx.any():
+            print("Scale and shift for Nan", scale[nan_idx], shift[nan_idx])
         logabsdet = torchutils.sum_except_batch(log_scale, num_batch_dims=1)
         return outputs, logabsdet
 
@@ -350,6 +353,9 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         log_scale = torch.log(scale)
         # print(scale, shift)
         outputs = (inputs - shift) / scale
+        nan_idx = torch.isnan(outputs)
+        if nan_idx.any():
+            print("Scale and shift for Nan", scale[nan_idx], shift[nan_idx])
         logabsdet = -torchutils.sum_except_batch(log_scale, num_batch_dims=1)
         return outputs, logabsdet
 

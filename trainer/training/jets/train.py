@@ -318,7 +318,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 else:
                     for name, param in ddp_model.named_parameters():
                         if torch.isnan(param.data).any() or torch.isinf(param.data).any():
-                        p   rint(name, param.data)
+                            print(name, param.data)
 
             test_loss = test_loss.item() / len(test_loader.dataset)
             test_log_p = test_log_p.item() / len(test_loader.dataset)

@@ -336,7 +336,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         outputs = scale * inputs + shift
         nan_idx = torch.isnan(outputs)
         if nan_idx.any():
-            print("Scale and shift for Nan", scale[nan_idx], shift[nan_idx])
+            print("Scale and shift for Nan", unconstrained_scale[nan_idx], scale[nan_idx], shift[nan_idx])
         logabsdet = torchutils.sum_except_batch(log_scale, num_batch_dims=1)
         return outputs, logabsdet
 
@@ -355,7 +355,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         outputs = (inputs - shift) / scale
         nan_idx = torch.isnan(outputs)
         if nan_idx.any():
-            print("Scale and shift for Nan", scale[nan_idx], shift[nan_idx])
+            print("Scale and shift for Nan", unconstrained_scale[nan_idx], scale[nan_idx], shift[nan_idx])
         logabsdet = -torchutils.sum_except_batch(log_scale, num_batch_dims=1)
         return outputs, logabsdet
 
@@ -377,6 +377,8 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
             elif self.affine_type == "atan":
                 shift = shift - 1
         # print(unconstrained_scale, shift)
+        if torch.isnan(unconstrained_scale).any() or torch.isnan(shift).any():
+            print("Nan in scale and shift", unconstrained_scale, shift)
         return unconstrained_scale, shift
 
 

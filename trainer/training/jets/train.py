@@ -251,7 +251,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             log_p, log_det = ddp_model(x, context=y)
             loss = -log_p - log_det
 
-            if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
+            if ~(torch.isnan(loss.any()) | torch.isinf(loss.any())):
                 # Keep track of total loss.
                 train_loss += (loss.detach()).sum()
                 train_log_p += (-log_p.detach()).sum()
@@ -310,11 +310,15 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 log_p, log_det = ddp_model(x, context=y)
                 loss = -log_p - log_det
 
-                if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
+                if ~(torch.isnan(loss.any()) | torch.isinf(loss.any())):
                     # Keep track of total loss.
                     test_loss += (loss.detach()).sum()
                     test_log_p += (-log_p.detach()).sum()
                     test_log_det += (-log_det.detach()).sum()
+                else:
+                    for name, param in ddp_model.named_parameters():
+                        if torch.isnan(param.data).any() or torch.isinf(param.data).any():
+                        p   rint(name, param.data)
 
             test_loss = test_loss.item() / len(test_loader.dataset)
             test_log_p = test_log_p.item() / len(test_loader.dataset)

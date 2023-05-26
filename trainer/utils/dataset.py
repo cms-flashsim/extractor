@@ -24,10 +24,10 @@ class ObjectDataset(Dataset):
         print("x_min: ", self.x_train.min())
         print("y_max: ", self.y_train.max())
         print("y_min: ", self.y_train.min())
-        print("Nan in x":, torch.isnan(self.x_train).sum())
-        print("Nan in y":, torch.isnan(self.y_train).sum())
-        print("Inf in x":, torch.isinf(self.x_train).sum())
-        print("Inf in y":, torch.isinf(self.y_train).sum())
+        print("Nan in x", torch.isnan(self.x_train).sum())
+        print("Nan in y", torch.isnan(self.y_train).sum())
+        print("Inf in x", torch.isinf(self.x_train).sum())
+        print("Inf in y", torch.isinf(self.y_train).sum())
 
     @property
     def archives(self):

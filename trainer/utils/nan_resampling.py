@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 
-def nan_resampling(sample, gen, model):
+def nan_resampling(sample, gen, model, device):
     sample = torch.tensor(sample)
     gen = torch.tensor(gen)
     nan_mask = torch.isnan(sample).any(axis=1)
@@ -16,5 +16,6 @@ def nan_resampling(sample, gen, model):
                 sample[nan_idx] = model.sample(num_samples=1, context=gen[nan_mask])
                 if not torch.isnan(sample[nan_idx]).any():
                     break
+    model.to(device)
     sample = sample.numpy()
     return sample

@@ -95,7 +95,7 @@ def validate(
     if np.isnan(samples).any():
         print("RESAMPLING")
 
-    samples = nan_resampling(samples, gen, model)
+    samples = nan_resampling(samples, gen, model, device)
 
     # check nan in samples
 

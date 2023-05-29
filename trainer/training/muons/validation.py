@@ -102,7 +102,7 @@ def validate(
         reco,
         gen,
         target_dictionary,
-        "scale_factors_muon.json",
+        "scale_factors_muons.json",
         saturate_ranges_path=None,
     )
 
@@ -110,7 +110,7 @@ def validate(
         samples,
         gen,
         target_dictionary,
-        "scale_factors_muon.json",
+        "scale_factors_muons.json",
         saturate_ranges_path=None,
     )
 

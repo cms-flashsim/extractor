@@ -6,20 +6,24 @@ X_DIM = 49
 
 
 def add_args(parser):
-
-    # model architecture options
+ # model architecture options
     parser.add_argument("--y_dim", type=int, default=Y_DIM)
     parser.add_argument("--x_dim", type=int, default=X_DIM)
 
     # flow options
     parser.add_argument("--num_steps_maf", type=int, default=20)
+    parser.add_argument("--affine_type", type=str, default="softplus", choices=["sigmoid", "softplus", "atan"])
     parser.add_argument("--num_steps_arqs", type=int, default=0)
     parser.add_argument("--num_steps_caf", type=int, default=0)
+    parser.add_argument("--coupling_net", type=str, default="mlp", choices=["mlp", "att"])
+    parser.add_argument("--att_embed_shape", type=int, default=64)
+    parser.add_argument("--att_num_heads", type=int, default=4)
     parser.add_argument("--num_transform_blocks_maf", type=int, default=8)
     parser.add_argument("--num_transform_blocks_arqs", type=int, default=7)
     parser.add_argument("--activation", type=str, default="relu")
     parser.add_argument("--dropout_probability_maf", type=float, default=0.0)
     parser.add_argument("--dropout_probability_arqs", type=float, default=0.1)
+    parser.add_argument("--dropout_probability_caf", type=float, default=0.0)
     parser.add_argument(
         "--use_residual_blocks_maf", type=eval, default=False, choices=[True, False]
     )
@@ -31,6 +35,9 @@ def add_args(parser):
     )
     parser.add_argument(
         "--batch_norm_arqs", type=eval, default=True, choices=[True, False]
+    )
+    parser.add_argument(
+        "--batch_norm_caf", type=eval, default=True, choices=[True, False]
     )
     parser.add_argument("--num_bins", type=int, default=64)
     parser.add_argument("--tail_bound", type=float, default=1.0)
@@ -88,9 +95,9 @@ def add_args(parser):
 
     # data options
     parser.add_argument("--train_start", type=int, default=0)
-    parser.add_argument("--train_limit", type=int, default=4005888)
+    parser.add_argument("--train_limit", type=int, default=5000000)
     parser.add_argument("--test_start", type=int, default=0)
-    parser.add_argument("--test_limit", type=int, default=130000)
+    parser.add_argument("--test_limit", type=int, default=300000)
 
     # logging and saving frequency
     parser.add_argument(
@@ -163,7 +170,6 @@ def add_args(parser):
     )
 
     return parser
-
 
 def get_parser():
     # command line args

@@ -288,7 +288,7 @@ def validate(
 
     ranges = [[0, 0.1], [0, 10], [0, 0.5]]
 
-    conds = [f"MGenPart_statusFlag{i}" for i in (0, 2, 7)]
+    conds = [f"GenPart_statusFlag{i}" for i in (0, 2, 7)]
     conds.append("ClosestJet_EncodedPartonFlavour_b")
 
     names = [

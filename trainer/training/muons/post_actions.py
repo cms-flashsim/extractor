@@ -15,7 +15,7 @@ transformation: ["i", func, [a, b]]  # (func(x) - b) / a
 In the case of multiple operations, order follows the operation list indexing.
 """
 
-target_dictionary_muons = {
+target_dictionary = {
     "cleanmask": [["c", 0.5, [0, 1]]],
     "highPtId": [["d", None, None]],
     "highPurity": [["c", 0.5, [0, 1]]],
@@ -88,6 +88,6 @@ target_dictionary_muons = {
     "charge": [["c", 0.0, [-1, 1]]],
 }
 
-target_dictionary_jets = {}
-for key, value in target_dictionary_muons.items():
-    target_dictionary_jets["Muon_" + key] = value
+target_dictionary_muons = {}
+for key, value in target_dictionary.items():
+    target_dictionary_muons["Muon_" + key] = value

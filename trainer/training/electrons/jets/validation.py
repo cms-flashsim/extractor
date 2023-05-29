@@ -26,6 +26,8 @@ from postprocessing import postprocessing
 from post_actions_jet import target_dictionary
 from corner_plots import make_corner
 
+from nan_resampling import nan_resampling
+
 from electrons.columns import gen_jet as gen_jetM
 from electrons.columns import reco_columns as reco_columnsM
 
@@ -85,6 +87,10 @@ def validate(
     gen = np.array(gen).reshape((-1, args.y_dim))
     reco = np.array(reco).reshape((-1, args.x_dim))
     samples = np.array(samples).reshape((-1, args.x_dim))
+
+    samples = nan_resampling(samples, gen, model)
+
+    # check nan in samples
 
     fullarray = np.concatenate((gen, reco, samples), axis=1)
     full_sim_cols = ["Full_" + x for x in reco_columns]

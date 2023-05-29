@@ -93,9 +93,7 @@ def validate(
         print("RESAMPLING")
 
     samples = nan_resampling(samples, gen, model, device)
-
-    # check nan in samples
-
+    
     fullarray = np.concatenate((gen, reco, samples), axis=1)
     full_sim_cols = ["Full_" + x for x in reco_columns]
     full_df = pd.DataFrame(

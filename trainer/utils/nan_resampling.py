@@ -12,13 +12,13 @@ def nan_resampling(sample, gen, model, device):
         device (string): the device to use for generating new samples
 
     Returns:
-        sampe: the full array with resampled nan values
+        sample: the full array with resampled nan values
     """    
     sample = torch.tensor(sample).to(device)
     gen = torch.tensor(gen).to(device)
     nan_mask = torch.isnan(sample).any(axis=1)
     if nan_mask.any():
-        nan_idx = torch.argwhere(nan_mask)
+        nan_idx = torch.nonzero(nan_mask)
         # Generate new samples
         model.eval()
         while True:

@@ -1,8 +1,8 @@
 import argparse
 
 
-Y_DIM = 37
-X_DIM = 49
+Y_DIM = 38
+X_DIM = 50
 
 
 def add_args(parser):

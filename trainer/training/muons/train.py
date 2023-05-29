@@ -225,6 +225,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         print("[Rank %d] World size : %d" % (args.rank, dist.get_world_size()))
 
     print("Start epoch: %d End epoch: %d" % (start_epoch, args.epochs))
+    torch.autograd.set_detect_anomaly(True) # for debugging
     for epoch in range(start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)

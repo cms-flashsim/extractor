@@ -172,9 +172,9 @@ def validate(
     # Return to physical kinematic variables
 
     for df in [reco, samples, saturated_samples]:
-        df["Muon_pt"] = df["Muon_ptRatio"] * gen["MGenMuon_pt"]
-        df["Muon_eta"] = df["Muon_etaMinusGen"] + gen["MGenMuon_eta"]
-        df["Muon_phi"] = df["Muon_phiMinusGen"] + gen["MGenMuon_phi"]
+        df["Muon_pt"] = df["Muon_ptRatio"] * gen["GenMuon_pt"]
+        df["Muon_eta"] = df["Muon_etaMinusGen"] + gen["GenMuon_eta"]
+        df["Muon_phi"] = df["Muon_phiMinusGen"] + gen["GenMuon_phi"]
 
     # Zoom-in for high ws distributions
 

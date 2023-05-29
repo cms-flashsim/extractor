@@ -85,6 +85,9 @@ def validate(
 
     fullarray = np.concatenate((gen, reco, samples), axis=1)
     full_sim_cols = ["FullSJet_" + x for x in jet_names]
+    print(jet_cond, len(jet_cond))
+    print(full_sim_cols, len(full_sim_cols))
+    print(reco_columns, len(reco_columns))
     full_df = pd.DataFrame(
         data=fullarray, columns=jet_cond + full_sim_cols + reco_columns
     )

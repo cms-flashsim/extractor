@@ -39,6 +39,7 @@ def add_args(parser):
     parser.add_argument(
         "--batch_norm_caf", type=eval, default=True, choices=[True, False]
     )
+    parser.add_argument("--activation_maf", type=str, default="relu")
     parser.add_argument("--num_bins", type=int, default=64)
     parser.add_argument("--tail_bound", type=float, default=1.0)
     parser.add_argument("--hidden_dim_maf", type=int, default=128)

@@ -594,6 +594,10 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
     Returns:
         Flow -- the model
     """
+    if base_kwargs["activation_maf"] == "leaky_relu":
+        activation_maf = F.leaky_relu
+    else:
+        activation_maf = F.relu
 
     distribution = distributions.StandardNormal((input_dim,))
     transform = []
@@ -609,6 +613,7 @@ def create_mixture_flow_model(input_dim, context_dim, base_kwargs):
                 use_batch_norm=base_kwargs["batch_norm_maf"],
                 init_identity=base_kwargs["init_identity"],
                 affine_type=base_kwargs["affine_type"],
+                activation=activation_maf,
             )
         )
         if base_kwargs["permute_type"] != "no-permutation":

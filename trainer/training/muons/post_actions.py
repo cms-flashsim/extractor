@@ -87,3 +87,7 @@ target_dictionary_muons = {
     "softMvaId": [["c", 0.5, [0, 1]]],
     "charge": [["c", 0.0, [-1, 1]]],
 }
+
+target_dictionary_jets = {}
+for key, value in target_dictionary_muons.items():
+    target_dictionary_jets["Muon_" + key] = value

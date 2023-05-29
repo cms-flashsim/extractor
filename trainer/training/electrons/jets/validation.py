@@ -89,9 +89,6 @@ def validate(
     samples = np.array(samples).reshape((-1, args.x_dim))
     print(gen.shape, samples.shape)
 
-    samples[0, 0] = float("nan")
-    samples[3, 5] = float("nan")
-
     if np.isnan(samples).any():
         print("RESAMPLING")
 

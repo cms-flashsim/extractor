@@ -50,9 +50,9 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         )
 
     if args.log_name is not None:
-        log_dir = "runs/%s" % args.log_name
+        log_dir = "/m100_scratch/userexternal/fvaselli/runs/%s" % args.log_name
     else:
-        log_dir = "runs/time-%d" % time.time()
+        log_dir = "/m100_scratch/userexternal/fvaselli/runs/time-%d" % time.time()
 
     if not args.distributed or (args.rank % ngpus_per_node == 0):
         writer = SummaryWriter(logdir=log_dir)
@@ -181,7 +181,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
     test_loader = torch.utils.data.DataLoader(
         dataset=te_dataset,
-        batch_size=8192,  # manually set batch size to avoid diff shapes
+        batch_size=10000,  # manually set batch size to avoid diff shapes
         shuffle=False,
         num_workers=0,
         pin_memory=True,
@@ -227,9 +227,9 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             writer.add_scalar("lr/optimizer", scheduler.get_last_lr(), epoch)
 
         # train for one epoch
-        train_loss = 0.0
-        train_log_p = 0.0
-        train_log_det = 0.0
+        train_loss = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+        train_log_p = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+        train_log_det = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
 
         ddp_model.train()
         model.train()
@@ -289,9 +289,9 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         # evaluate on the validation set
         with torch.no_grad():
             ddp_model.eval()
-            test_loss = 0.0
-            test_log_p = 0.0
-            test_log_det = 0.0
+            test_loss = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+            test_log_p = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+            test_log_det = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
 
             for x, y in test_loader:
                 if gpu is not None:
@@ -365,7 +365,7 @@ def main():
     print(args)
 
     args.log_name = args.log_name
-    save_dir = os.path.join(".", "checkpoints", args.log_name)
+    save_dir = os.path.join("/m100_scratch/userexternal/fvaselli", "checkpoints", args.log_name)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 

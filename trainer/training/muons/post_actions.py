@@ -34,7 +34,7 @@ target_dictionary = {
     "tightCharge": [["c", 1, [0, 2]]],
     "tightId": [["c", 0.5, [0, 1]]],
     "tkIsoId": [["c", 1.5, [1, 2]]],
-    "triggrIdLoose": [["c", 0.5, [0, 1]]],
+    "triggerIdLoose": [["c", 0.5, [0, 1]]],
     "etaMinusGen": [
         ["i", np.tan, [100, 0]],
     ],

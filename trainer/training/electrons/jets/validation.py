@@ -88,7 +88,12 @@ def validate(
     reco = np.array(reco).reshape((-1, args.x_dim))
     samples = np.array(samples).reshape((-1, args.x_dim))
 
+    if np.isnan(samples).any():
+        print("RESAMPLING")
+
     samples = nan_resampling(samples, gen, model)
+
+    
 
     # check nan in samples
 

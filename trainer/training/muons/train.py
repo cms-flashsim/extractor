@@ -317,6 +317,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                     test_log_p += (-log_p.detach()).sum()
                     test_log_det += (-log_det.detach()).sum()
 
+                print(test_loss)
                 test_loss = test_loss.item() / len(test_loader.dataset)
                 test_log_p = test_log_p.item() / len(test_loader.dataset)
                 test_log_det = test_log_det.item() / len(test_loader.dataset)

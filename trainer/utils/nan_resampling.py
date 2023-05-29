@@ -3,6 +3,17 @@ import torch
 
 
 def nan_resampling(sample, gen, model, device):
+    """a function to resample nan values in the generated samples
+
+    Args:
+        sample (np array): the generated samples
+        gen (np array): the gen starting points
+        model (torch nn): the flow model (must be on same device as below)
+        device (string): the device to use for generating new samples
+
+    Returns:
+        sampe: the full array with resampled nan values
+    """    
     sample = torch.tensor(sample).to(device)
     gen = torch.tensor(gen).to(device)
     nan_mask = torch.isnan(sample).any(axis=1)

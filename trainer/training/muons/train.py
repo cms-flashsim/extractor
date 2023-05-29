@@ -187,7 +187,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
     test_loader = torch.utils.data.DataLoader(
         dataset=te_dataset,
-        batch_size=1000,  # manually set batch size to avoid diff shapes
+        batch_size=10000,  # manually set batch size to avoid diff shapes
         shuffle=False,
         num_workers=0,
         pin_memory=True,
@@ -225,78 +225,78 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         print("[Rank %d] World size : %d" % (args.rank, dist.get_world_size()))
 
     print("Start epoch: %d End epoch: %d" % (start_epoch, args.epochs))
-    with torch.autograd.set_detect_anomaly(True): # for debugging
-        for epoch in range(start_epoch, args.epochs):
-            if args.distributed:
-                train_sampler.set_epoch(epoch)
+    # with torch.autograd.set_detect_anomaly(True): # for debugging
+    for epoch in range(start_epoch, args.epochs):
+        if args.distributed:
+            train_sampler.set_epoch(epoch)
 
-            if writer is not None:
-                writer.add_scalar("lr/optimizer", scheduler.get_last_lr(), epoch)
+        if writer is not None:
+            writer.add_scalar("lr/optimizer", scheduler.get_last_lr(), epoch)
 
-            # train for one epoch
-            train_loss = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
-            train_log_p = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
-            train_log_det = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+        # train for one epoch
+        train_loss = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+        train_log_p = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+        train_log_det = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
 
-            ddp_model.train()
-            model.train()
+        ddp_model.train()
+        model.train()
 
-            for batch_idx, (x, y) in enumerate(train_loader):
-                optimizer.zero_grad()
+        for batch_idx, (x, y) in enumerate(train_loader):
+            optimizer.zero_grad()
 
-                if gpu is not None:
-                    x = x.cuda(args.gpu, non_blocking=True)
-                    y = y.cuda(args.gpu, non_blocking=True)
+            if gpu is not None:
+                x = x.cuda(args.gpu, non_blocking=True)
+                y = y.cuda(args.gpu, non_blocking=True)
 
-                # Compute log prob
-                log_p, log_det = ddp_model(x, context=y)
-                loss = -log_p - log_det
+            # Compute log prob
+            log_p, log_det = ddp_model(x, context=y)
+            loss = -log_p - log_det
 
-                if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
-                    # Keep track of total loss.
-                    train_loss += (loss.detach()).sum()
-                    train_log_p += (-log_p.detach()).sum()
-                    train_log_det += (-log_det.detach()).sum()
+            if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
+                # Keep track of total loss.
+                train_loss += (loss.detach()).sum()
+                train_log_p += (-log_p.detach()).sum()
+                train_log_det += (-log_det.detach()).sum()
 
-                    # loss = (w * loss).sum() / w.sum()
-                    loss = (loss).mean()
+                # loss = (w * loss).sum() / w.sum()
+                loss = (loss).mean()
 
-                    loss.backward()
-                    optimizer.step()
+                loss.backward()
+                optimizer.step()
 
-                else:
-                    print("NaN detected in training loss")
-                if (output_freq is not None) and (batch_idx % output_freq == 0):
-                    duration = time.time() - start_time
-                    start_time = time.time()
-                    print(
-                        "[Rank %d] Epoch %d Batch [%2d/%2d] Time [%3.2fs] Loss %2.5f"
-                        % (
-                            args.rank,
-                            epoch,
-                            batch_idx,
-                            len(train_loader),
-                            duration,
-                            loss.item(),
-                        )
+            else:
+                print("NaN detected in training loss")
+            if (output_freq is not None) and (batch_idx % output_freq == 0):
+                duration = time.time() - start_time
+                start_time = time.time()
+                print(
+                    "[Rank %d] Epoch %d Batch [%2d/%2d] Time [%3.2fs] Loss %2.5f"
+                    % (
+                        args.rank,
+                        epoch,
+                        batch_idx,
+                        len(train_loader),
+                        duration,
+                        loss.item(),
                     )
-
-            train_loss = (train_loss.item() / len(train_loader.dataset)) * args.world_size
-            train_log_p = (train_log_p.item() / len(train_loader.dataset)) * args.world_size
-            train_log_det = (
-                train_log_det.item() / len(train_loader.dataset)
-            ) * args.world_size
-            if not args.distributed or (args.rank % ngpus_per_node == 0):
-                writer.add_scalar("train/loss", train_loss, epoch)
-                writer.add_scalar("train/log_p", train_log_p, epoch)
-                writer.add_scalar("train/log_det", train_log_det, epoch)
-            print(
-                "Model:{} Train Epoch: {} \tAverage Loss: {:.4f}, \tAverage log p: {:.4f}, \tAverage log det: {:.4f}".format(
-                    args.log_name, epoch, train_loss, train_log_p, train_log_det
                 )
+
+        train_loss = (train_loss.item() / len(train_loader.dataset)) * args.world_size
+        train_log_p = (train_log_p.item() / len(train_loader.dataset)) * args.world_size
+        train_log_det = (
+            train_log_det.item() / len(train_loader.dataset)
+        ) * args.world_size
+        if not args.distributed or (args.rank % ngpus_per_node == 0):
+            writer.add_scalar("train/loss", train_loss, epoch)
+            writer.add_scalar("train/log_p", train_log_p, epoch)
+            writer.add_scalar("train/log_det", train_log_det, epoch)
+        print(
+            "Model:{} Train Epoch: {} \tAverage Loss: {:.4f}, \tAverage log p: {:.4f}, \tAverage log det: {:.4f}".format(
+                args.log_name, epoch, train_loss, train_log_p, train_log_det
             )
-            # evaluate on the validation set
-            #with torch.no_grad():
+        )
+        # evaluate on the validation set
+        with torch.no_grad():
             ddp_model.eval()
             test_loss = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
             test_log_p = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
@@ -325,39 +325,39 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                     writer.add_scalar("test/log_p", test_log_p, epoch)
                     writer.add_scalar("test/log_det", test_log_det, epoch)
                 # test_loss = test_loss.item() / total_weight.item()
-                print(
-                    "Test set: Average loss: {:.4f}, \tAverage log p: {:.4f}, \tAverage log det: {:.4f}".format(
-                        test_loss, test_log_p, test_log_det
-                    )
+            print(
+                "Test set: Average loss: {:.4f}, \tAverage log p: {:.4f}, \tAverage log det: {:.4f}".format(
+                    test_loss, test_log_p, test_log_det
                 )
+            )
 
-            scheduler.step()
-            train_history.append(train_loss)
-            test_history.append(test_loss)
-            if epoch % args.val_freq == 0:
-                if not args.distributed or (args.rank % ngpus_per_node == 0):
-                    if val_func is not None:
-                        val_func(
-                            test_loader,
-                            model,
-                            epoch,
-                            writer,
-                            save_dir,
-                            args,
-                            args.gpu,
-                        )
-            # save checkpoints
+        scheduler.step()
+        train_history.append(train_loss)
+        test_history.append(test_loss)
+        if epoch % args.val_freq == 0:
             if not args.distributed or (args.rank % ngpus_per_node == 0):
-                if epoch % args.save_freq == 0:
-                    save_model(
-                        epoch,
+                if val_func is not None:
+                    val_func(
+                        test_loader,
                         model,
-                        scheduler,
-                        train_history,
-                        test_history,
-                        name="model",
-                        model_dir=save_dir,
-                        optimizer=optimizer,
+                        epoch,
+                        writer,
+                        save_dir,
+                        args,
+                        args.gpu,
+                    )
+        # save checkpoints
+        if not args.distributed or (args.rank % ngpus_per_node == 0):
+            if epoch % args.save_freq == 0:
+                save_model(
+                    epoch,
+                    model,
+                    scheduler,
+                    train_history,
+                    test_history,
+                    name="model",
+                    model_dir=save_dir,
+                    optimizer=optimizer,
                     )
         print("done")
 

@@ -125,7 +125,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 device_ids=[args.gpu],
                 output_device=args.gpu,
                 check_reduction=True,
-                find_unused_parameters=True,
+                find_unused_parameters=False,
             )
             args.batch_size = int(args.batch_size / ngpus_per_node)
             args.workers = 0
@@ -296,26 +296,26 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                 )
             )
             # evaluate on the validation set
-            with torch.no_grad():
-                ddp_model.eval()
-                test_loss = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
-                test_log_p = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
-                test_log_det = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+            #with torch.no_grad():
+            ddp_model.eval()
+            test_loss = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+            test_log_p = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
+            test_log_det = torch.tensor([0.0]).cuda(args.gpu, non_blocking=True)
 
-                for x, y in test_loader:
-                    if gpu is not None:
-                        x = x.cuda(args.gpu, non_blocking=True)
-                        y = y.cuda(args.gpu, non_blocking=True)
+            for x, y in test_loader:
+                if gpu is not None:
+                    x = x.cuda(args.gpu, non_blocking=True)
+                    y = y.cuda(args.gpu, non_blocking=True)
 
-                    # Compute log prob
-                    log_p, log_det = ddp_model(x, context=y)
-                    loss = -log_p - log_det
+                # Compute log prob
+                log_p, log_det = ddp_model(x, context=y)
+                loss = -log_p - log_det
 
-                    if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
-                        # Keep track of total loss.
-                        test_loss += (loss.detach()).sum()
-                        test_log_p += (-log_p.detach()).sum()
-                        test_log_det += (-log_det.detach()).sum()
+                if ~(torch.isnan(loss.mean()) | torch.isinf(loss.mean())):
+                    # Keep track of total loss.
+                    test_loss += (loss.detach()).sum()
+                    test_log_p += (-log_p.detach()).sum()
+                    test_log_det += (-log_det.detach()).sum()
 
                 test_loss = test_loss.item() / len(test_loader.dataset)
                 test_log_p = test_log_p.item() / len(test_loader.dataset)

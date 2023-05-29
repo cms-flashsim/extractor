@@ -317,15 +317,14 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
                     test_log_p += (-log_p.detach()).sum()
                     test_log_det += (-log_det.detach()).sum()
 
-                print(test_loss)
-                test_loss = test_loss.item() / len(test_loader.dataset)
-                test_log_p = test_log_p.item() / len(test_loader.dataset)
-                test_log_det = test_log_det.item() / len(test_loader.dataset)
-                if not args.distributed or (args.rank % ngpus_per_node == 0):
-                    writer.add_scalar("test/loss", test_loss, epoch)
-                    writer.add_scalar("test/log_p", test_log_p, epoch)
-                    writer.add_scalar("test/log_det", test_log_det, epoch)
-                # test_loss = test_loss.item() / total_weight.item()
+            test_loss = test_loss.item() / len(test_loader.dataset)
+            test_log_p = test_log_p.item() / len(test_loader.dataset)
+            test_log_det = test_log_det.item() / len(test_loader.dataset)
+            if not args.distributed or (args.rank % ngpus_per_node == 0):
+                writer.add_scalar("test/loss", test_loss, epoch)
+                writer.add_scalar("test/log_p", test_log_p, epoch)
+                writer.add_scalar("test/log_det", test_log_det, epoch)
+            # test_loss = test_loss.item() / total_weight.item()
             print(
                 "Test set: Average loss: {:.4f}, \tAverage log p: {:.4f}, \tAverage log det: {:.4f}".format(
                     test_loss, test_log_p, test_log_det

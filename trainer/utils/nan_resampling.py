@@ -5,7 +5,7 @@ import torch
 def nan_resampling(sample, gen, model):
     sample = torch.tensor(sample)
     gen = torch.tensor(gen)
-    nan_mask = torch.isnan(sample).any(axis=0)
+    nan_mask = torch.isnan(sample).any(axis=1)
     if nan_mask.any():
         nan_idx = torch.argwhere(nan_mask)
         # Generate new samples

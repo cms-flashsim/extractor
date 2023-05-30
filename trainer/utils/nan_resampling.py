@@ -19,6 +19,7 @@ def nan_resampling(sample, gen, model, device):
     nan_mask = torch.isnan(sample).any(axis=1)
     if nan_mask.any():
         nan_idx = torch.nonzero(nan_mask)
+        print(f"Resampling {len(nan_idx)} nans")
         # Generate new samples
         model.eval()
         while True:

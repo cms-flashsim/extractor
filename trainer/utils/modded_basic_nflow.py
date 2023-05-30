@@ -295,7 +295,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
             dropout_probability=dropout_probability,
             use_batch_norm=use_batch_norm,
         )
-        self._epsilon = 1e-3
+        self._epsilon = 5e-2
         self.init_identity = init_identity
         self.affine_type = affine_type
         if init_identity:
@@ -328,7 +328,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         if self.affine_type == "sigmoid":
             scale = 1000 * torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
         elif self.affine_type == "softplus":
-            scale = (F.softplus(unconstrained_scale)) + self._epsilon  # ).clamp(0, 50)
+            scale = ((F.softplus(unconstrained_scale)) + self._epsilon).clamp(0, 1)
         elif self.affine_type == "atan":
             scale = (1000 * torch.atan(unconstrained_scale / 1000)).clamp(0.001, 50)
 
@@ -345,7 +345,7 @@ class MaskedAffineAutoregressiveTransformM(AutoregressiveTransform):
         if self.affine_type == "sigmoid":
             scale = 1000 * torch.sigmoid(unconstrained_scale + 1.0) + self._epsilon
         elif self.affine_type == "softplus":
-            scale = (F.softplus(unconstrained_scale)) + self._epsilon  # ).clamp(0, 50)
+            scale = ((F.softplus(unconstrained_scale)) + self._epsilon).clamp(0, 1)
         elif self.affine_type == "atan":
             scale = (1000 * torch.atan(unconstrained_scale / 1000)).clamp(0.001, 50)
         log_scale = torch.log(scale)

@@ -78,8 +78,10 @@ def validate(
     print(f"Average objs/sec: {len(x_sampled)/np.mean(np.array(times))}")
     # Making DataFrames
 
-    reco_columns = [col.replace("M", "") for col in reco_columnsM]
-    gen_ele = [col.replace("M", "") if col.startswith("M") else col for col in gen_eleM]
+    reco_columns = [col.replace("M", "", 1) for col in reco_columnsM]
+    gen_ele = [
+        col.replace("M", "", 1) if col.startswith("M") else col for col in gen_eleM
+    ]
 
     gen = np.array(gen).reshape((-1, args.y_dim))
     reco = np.array(reco).reshape((-1, args.x_dim))

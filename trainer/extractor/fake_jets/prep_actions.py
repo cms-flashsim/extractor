@@ -51,7 +51,7 @@ target_dictionary_jets = {
     "MJet_neHEF": [],
     "MJet_partonFlavour": [["u", 0.5, None]],
     "MJet_phi": [],
-    "MJet_pt": [["manual_range", [0.1, 5]]],
+    "MJet_pt": [],
     "MJet_puId": [["u", 0.5, None]],
     "MJet_puIdDisc": [],
     "MJet_qgl": [],

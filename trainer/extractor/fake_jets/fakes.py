@@ -69,11 +69,11 @@ def extract_fakejets(inputname, outputname, dict):
 
     d = ROOT.RDataFrame("Events", inputname)
 
-    d = extractJetFeatures(d)
+    d = extractFakeJetFeatures(d)
 
     n_match, n_reco = dict["RECOJET_GENJET"]
 
-    n_match += d.Histo1D("MJet_ptRatio").GetEntries()
+    n_match += d.Histo1D("MJet_pt").GetEntries()
     n_reco += d.Histo1D("Jet_pt").GetEntries()
 
     dict["RECOJET_GENJET"] = (n_match, n_reco)

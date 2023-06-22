@@ -1,7 +1,7 @@
 import os
 import json
 
-from jets import extract_jets
+from fakes import extract_fakejets
 
 root = "/gpfs/ddn/srm/cms/store/mc/RunIISummer20UL18NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/"
 
@@ -31,7 +31,7 @@ d = {
 
 if __name__ == "__main__":
     for file_in, file_out in zip(file_paths, extracted):
-        extract_jets(file_in, file_out, d)
+        extract_fakejets(file_in, file_out, d)
 
     with open(os.path.join(os.path.dirname(__file__), "match_dict.json"), "w") as f:
         json.dump(d, f)

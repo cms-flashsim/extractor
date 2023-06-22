@@ -3,10 +3,6 @@ import ROOT
 
 from columns import jet_cond, reco_columns
 
-module_path = os.path.join(os.path.dirname(__file__), "jets.h")
-
-ROOT.gInterpreter.ProcessLine(f'#include "{module_path}"')
-
 
 def extractFakeJetFeatures(df):
     """for going from GenJet to reco jet

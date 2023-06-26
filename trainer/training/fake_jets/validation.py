@@ -103,7 +103,7 @@ def validate(
         gen,
         target_dictionary_jets,
         "scale_factors_fakejets.json",
-        saturate_ranges_path="ranges_jets.json",
+        saturate_ranges_path="ranges_fakejets.json",
     )
 
     samples = postprocessing(
@@ -111,7 +111,7 @@ def validate(
         gen,
         target_dictionary_jets,
         "scale_factors_fakejets.json",
-        saturate_ranges_path="ranges_jets.json",
+        saturate_ranges_path="ranges_fakejets.json",
     )
 
     # New DataFrame containing FullSim-range saturated samples

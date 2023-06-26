@@ -88,7 +88,7 @@ def validate(
     full_df = pd.DataFrame(
         data=fullarray, columns=jet_cond + full_sim_cols + reco_columns
     )
-    full_df.to_pickle(os.path.join(save_dir, "./full_jet_df.pkl"))
+    full_df.to_pickle(os.path.join(save_dir, "./full_fakejet_df.pkl"))
 
     # optionally you can read full_df from pickle and skip the previous steps
     # full_df = pd.read_pickle("./full_jet_df.pkl") # please provide column names (full_sim_cols = ["FullSJet_" + x for x in jet_names])

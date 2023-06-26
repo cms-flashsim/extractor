@@ -170,70 +170,9 @@ def validate(
         writer.add_scalar(f"ws/{column}_wasserstein_distance", ws, global_step=epoch)
         plt.close()
 
-    # Profile histograms
-    columns = [
-        ["Jet_ptRatio", "GenJet_pt", [10, 1000]],
-    ]
-
-    n_bins = 30
-    hep.style.use("CMS")
-
-    # NOTE: to get back to the orginal mpl style, use: mpl.rcParams.update(mpl.rcParamsDefault)
-
-    for elm in columns:
-        x_slice_mean, x_slice_rms, xbinwn, xe = profile_hist(
-            n_bins, reco[elm[0]].values, gen[elm[1]].values
-        )
-        x_slice_mean_sat, x_slice_rms_sat, xbinwn_sat, xe_sat = profile_hist(
-            n_bins, saturated_samples[elm[0]].values, gen[elm[1]].values
-        )
-        fig, (ax1) = plt.subplots(1, 1, figsize=(10, 6), tight_layout=True)
-        print(xe, x_slice_mean, x_slice_rms, xbinwn)
-        print(xe_sat, x_slice_mean_sat, x_slice_rms_sat, xbinwn_sat)
-        hep.cms.text('Simulation Preliminary')
-
-        ax1.errorbar(xe[:-1]+ xbinwn/2, x_slice_mean, x_slice_rms, marker='o', fmt='_',  label='FullSim')
-        ax1.errorbar(xe_sat[:-1]+ xbinwn_sat/2, x_slice_mean_sat, x_slice_rms_sat, marker='o', fmt='_', label="FlashSim", color='tab:orange')
-        ax1.set_xscale('log')
-        ax1.set_ylabel(r"p$_T$Ratio", fontsize=18)
-        ax1.set_xlabel(r"GenJet p$_T$ [GeV]", fontsize=18)
-        ax1.set_xlim(elm[2])
-        ax1.legend(fontsize=16, frameon=False)
-        plt.savefig(os.path.join(save_dir, f"profhist_{elm[0]}.png"))
-        plt.savefig(os.path.join(save_dir, f"profhist_{elm[0]}.pdf"))
-        writer.add_figure(f"prof_hists/profhist_{elm[0]}", fig, global_step=epoch)
-
-        fig, (ax2) = plt.subplots(1, 1, figsize=(10, 6), tight_layout=True)
-        hep.cms.text('Simulation Preliminary')
-        ax2.errorbar(xe[:-1]+ xbinwn/2, x_slice_rms, label='FullSim', ls='--')
-        # ax2.errorbar(xef[:-1]+ xbinwf/2, x_slice_rmsf, color='tab:green', label='FastSim')
-        ax2.errorbar(xe_sat[:-1]+ xbinwn_sat/2, x_slice_rms_sat, color='tab:orange', label='FlashSim')
-
-        ax2.set_xscale('log')
-        ax2.set_xlim(elm[2])
-        ax2.set_xlabel(r"GenJet p$_T$ [GeV]", fontsize=18)
-        ax2.set_ylabel("RMS", fontsize=18)
-        ax2.legend(fontsize=16, frameon=False)
-        plt.savefig(os.path.join(save_dir, f"profhistrms_{elm[0]}.png"))
-        plt.savefig(os.path.join(save_dir, f"profhistrms_{elm[0]}.pdf"))
-        writer.add_figure(f"prof_hists/profhistrms_{elm[0]}", fig, global_step=epoch)
-
-
-
-    mpl.rcParams.update(mpl.rcParamsDefault)
-    # Return to physical kinematic variables
-
-    for df in [reco, samples, saturated_samples]:
-        df["Jet_pt"] = df["Jet_ptRatio"] * gen["GenJet_pt"]
-        df["Jet_eta"] = df["Jet_etaMinusGen"] + gen["GenJet_eta"]
-        df["Jet_phi"] = df["Jet_phiMinusGen"] + gen["GenJet_phi"]
-
     # Zoom-in for high ws distributions
 
-    incriminated = [
-        ["Jet_pt", [0, 1000]],
-        ["Jet_eta", [-3, 3]],
-        ["Jet_phi", [-3.14, 3.14]],
+    incriminated = [,
         ["Jet_mass", [0, 100]],
     ]
     for elm in incriminated:

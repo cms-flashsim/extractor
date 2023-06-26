@@ -154,14 +154,14 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
     dirpath = os.path.dirname(__file__)
 
     tr_dataset = ObjectDataset(
-        [os.path.join(dirpath, "MFakeJets.hdf5")],
+        [os.path.join(dirpath, "MJets.hdf5")],
         x_dim=args.x_dim,
         y_dim=args.y_dim,
         start=0,
         limit=args.train_limit,
     )
     te_dataset = ObjectDataset(
-        [os.path.join(dirpath, "MFakeJets.hdf5")],
+        [os.path.join(dirpath, "MJets.hdf5")],
         x_dim=args.x_dim,
         y_dim=args.y_dim,
         start=args.train_limit,

@@ -231,7 +231,7 @@ def validate(
     # taggers
     # first, add the pt column from gen to reco and samples
     reco["Jet_pt"] = gen["Jet_pt"]
-    samples["Jet_pt"] = gen["Jet_pt"]
+    saturated_samples["Jet_pt"] = gen["Jet_pt"]
 
     labels = [
         "pt",
@@ -262,50 +262,3 @@ def validate(
     plt.savefig(f"{save_dir}/Taggers_corner.pdf")
     writer.add_figure("Corner_plots/Taggers", fig, global_step=epoch)
 
-    # # ROC
-    # hep.style.use("CMS")
-
-    # # NOTE: to get back to the orginal mpl style, use: mpl.rcParams.update(mpl.rcParamsDefault)
-    # taggers = [
-    #     "btagDeepFlavB",
-    #     "btagCSVV2",
-    #     "btagDeepB",
-    # ]
-    # taggers = [f"Jet_{tagger}" for tagger in taggers]
-
-    # b_mask = gen["GenJet_EncodedPartonFlavour_b"].values
-    # uds_mask = gen["GenJet_EncodedPartonFlavour_light"].values
-
-    # for tagger in taggers:
-    #     fpr, tpr, roc_auc, bs, nbs = tagROC(reco, b_mask, uds_mask, tagger)
-    #     fpr2, tpr2, roc_auc2, bs2, nbs2 = tagROC(samples, b_mask, uds_mask, tagger)
-    #     fig = plt.figure()
-    #     lw = 2
-
-    #     plt.plot(
-    #         tpr,
-    #         fpr,
-    #         lw=lw,
-    #         label="ROC curve (area = %0.2f) FullSim" % roc_auc,
-    #         ls="--",
-    #     )
-    #     plt.plot(
-    #         tpr2,
-    #         fpr2,
-    #         lw=lw,
-    #         label=f"ROC curve (area = %0.2f) FlashSim" % roc_auc2,
-    #     )
-
-    #     plt.xlim([0.0, 1.0])
-    #     plt.yscale("log")
-    #     plt.ylim([0.0005, 1.05])
-
-    #     plt.xlabel(f"Efficiency for {tagger} (TP)", fontsize=35)
-    #     plt.ylabel("Mistagging prob (FP)", fontsize=35)
-    #     hep.cms.text("Simulation Preliminary")
-    #     plt.legend(fontsize=16, frameon=False, loc="best")
-
-    #     plt.savefig(f"{save_dir}/{tagger}_roc.png", format="png")
-    #     plt.savefig(f"{save_dir}/{tagger}_roc.pdf")
-    #     writer.add_figure(f"rocs/{tagger}", fig, global_step=epoch)
-    #     plt.close()

@@ -231,7 +231,7 @@ def validate(
     # taggers
 
     labels = [
-        "pt"
+        "pt",
         "btagCSVV2",
         "btagDeepB",
         "btagDeepCvB",

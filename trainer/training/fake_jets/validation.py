@@ -229,6 +229,9 @@ def validate(
     # Corner plots:
 
     # taggers
+    # first, add the pt column from gen to reco and samples
+    reco["Jet_pt"] = gen["Jet_pt"]
+    samples["Jet_pt"] = gen["Jet_pt"]
 
     labels = [
         "pt",

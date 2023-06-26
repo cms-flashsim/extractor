@@ -23,8 +23,8 @@ from post_actions import target_dictionary_jets
 from corner_plots import make_corner
 from val_funcs import tagROC, profile_hist
 
-from jets.columns import jet_cond as jet_cond_M
-from jets.columns import jet_names
+from fake_jets.columns import jet_cond as jet_cond_M
+from fake_jets.columns import jet_names
 import mplhep as hep
 import matplotlib as mpl
 

@@ -102,7 +102,7 @@ def validate(
         reco,
         gen,
         target_dictionary_jets,
-        "scale_factors_jets.json",
+        "scale_factors_fakejets.json",
         saturate_ranges_path="ranges_jets.json",
     )
 
@@ -110,7 +110,7 @@ def validate(
         samples,
         gen,
         target_dictionary_jets,
-        "scale_factors_jets.json",
+        "scale_factors_fakejets.json",
         saturate_ranges_path="ranges_jets.json",
     )
 

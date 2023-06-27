@@ -69,6 +69,11 @@ if __name__ == "__main__":
 
     plt.scatter(inputs, tagets)
     plt.savefig("test.png")
+    # save the numpy arrays to file
+    inputs = np.array(inputs).flatten()
+    tagets = np.array(tagets).flatten()
+    total = np.concatenate((inputs, tagets), axis=1)
+    np.save("test.npy", total)
 
 
     # main training loop

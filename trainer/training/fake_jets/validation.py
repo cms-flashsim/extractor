@@ -247,7 +247,7 @@ def validate(
     labels = [f"Jet_{label}" for label in labels]
 
     ranges = [
-        (0, 250),
+        (0, 50),
         (0, 1),
         (0, 1),
         (0, 1),

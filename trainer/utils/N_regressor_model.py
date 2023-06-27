@@ -11,8 +11,10 @@ class N_regressor(nn.Module):
         self.fc2 = nn.Linear(hidden_size, hidden_size//2)
         self.fc3 = nn.Linear(hidden_size//2, output_size)
         self.dropout = dropout
+        self.batchnorm = nn.BatchNorm1d(input_size)
 
     def forward(self, x):
+        x = self.batchnorm(x)
         x = F.relu(self.fc1(x))
         x = F.dropout(x, self.dropout)
         x = F.relu(self.fc4(x))

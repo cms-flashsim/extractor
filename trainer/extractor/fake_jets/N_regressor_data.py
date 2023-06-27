@@ -26,7 +26,7 @@ def get_df(file_num):
         ["MJet_pt"],
         library="ak",
         entry_stop=STOP,
-    ).astype("float32"))
+    )).astype("float32")
 
     num_fakes = dfft.reset_index(level=1).index.value_counts(sort=False).reindex(np.arange(len(dfgl)), fill_value=0).values
     # limit num fakes to 10

@@ -103,9 +103,9 @@ if __name__ == "__main__":
                 test_loss,
             )
         )
-        if epoch % 10 == 0:
-            torch.save(model.state_dict(), f"./models/N_regressor_{epoch}.pt")
-            print("Saved model")
+        # if epoch % 10 == 0:
+        #     torch.save(model.state_dict(), f"./models/N_regressor_{epoch}.pt")
+        #     print("Saved model")
 
     print("Total time: {}".format(time.time() - start_time))
     # plot loss history

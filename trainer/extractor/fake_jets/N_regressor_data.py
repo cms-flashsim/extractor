@@ -10,7 +10,7 @@ STOP = None
 
 def get_df(file_num):
     
-    tree = uproot.open(f"/home/users/fvaselli/trainer/trainer/extractor/fake_jets/dataset/MFakeJets{file_num}.root:MFakeJets", num_workers=20)
+    tree = uproot.open(f"/home/users/fvaselli/trainer/trainer/extractor/fake_jets/dataset/MFakeJets_{file_num}.root:MFakeJets", num_workers=20)
     # define pandas df for fast manipulation
     dfgl = tree.arrays(
         [

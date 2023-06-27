@@ -64,8 +64,8 @@ if __name__ == "__main__":
     tagets = []
     inputs = []
     for target, data in test_loader:
-        tagets.append(target)
-        inputs.append(data)
+        tagets.append(target.cpu().numpy())
+        inputs.append(data.cpu().numpy())
 
     plt.scatter(inputs, tagets)
     plt.savefig("test.png")

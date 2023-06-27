@@ -60,6 +60,16 @@ if __name__ == "__main__":
         pin_memory=True,
         drop_last=True,
     )
+        # sanity check: plot target vs input from test loader
+    tagets = []
+    inputs = []
+    for target, data in test_loader:
+        tagets.append(target)
+        inputs.append(data)
+
+    plt.scatter(inputs, tagets)
+    plt.savefig("test.png")
+
 
     # main training loop
     start_time = time.time()

@@ -97,21 +97,21 @@ if __name__ == "__main__":
                 data, target = data.to(device), target.to(device)
                 output = model(data)
                 test_loss += F.mse_loss(output, target, reduction="sum").item()
-
-                # plot predictions
-                data, target = data.to(device), target.to(device)
-                output = model(data)
-                output = output.cpu().numpy()
-                target = target.cpu().numpy()
-                targets.append(target)
-                outputs.append(output)
-
-            plt.scatter(targets, outputs, s=0.1)
-            plt.plot([-1, 12], [-1, 12], color="red")
-            plt.xlabel("True number of fakes")
-            plt.ylabel("Predicted number of fakes")
-            plt.savefig(f"predictions_{epoch}.png")
-            plt.close()
+                if epoch % 10 == 0:
+                    # plot predictions
+                    data, target = data.to(device), target.to(device)
+                    output = model(data)
+                    output = output.cpu().numpy()
+                    target = target.cpu().numpy()
+                    targets.append(target)
+                    outputs.append(output)
+            if epoch % 10 == 0:
+                plt.scatter(targets, outputs, s=0.1)
+                plt.plot([-1, 12], [-1, 12], color="red")
+                plt.xlabel("True number of fakes")
+                plt.ylabel("Predicted number of fakes")
+                plt.savefig(f"predictions_{epoch}.png")
+                plt.close()
 
         test_loss /= len(test_loader.dataset)
         test_history.append(test_loss)

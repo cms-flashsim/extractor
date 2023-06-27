@@ -18,10 +18,10 @@ from N_regressor_model import N_regressor
 if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = N_regressor(input_size=1, hidden_size=64, output_size=1)
+    model = N_regressor(input_size=1, hidden_size=128, output_size=1, dropout=0.05)
     model = model.to(device)
 
-    lr = 1e-2
+    lr = 1e-1
     optimizer = torch.optim.Adam(
         model.parameters(),
         lr=lr,

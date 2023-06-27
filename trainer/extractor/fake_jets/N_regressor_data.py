@@ -22,11 +22,11 @@ def get_df(file_num):
     print(dfgl)
 
     # define pandas df for fast manipulation
-    dfft = tree.arrays(
+    dfft = ak.to_dataframe(tree.arrays(
         ["MJet_pt"],
-        library="pd",
+        library="ak",
         entry_stop=STOP,
-    ).astype("float32")
+    ).astype("float32"))
 
     num_fakes = dfft.reset_index(level=1).index.value_counts(sort=False).reindex(np.arange(len(dfgl)), fill_value=0).values
     # limit num fakes to 10

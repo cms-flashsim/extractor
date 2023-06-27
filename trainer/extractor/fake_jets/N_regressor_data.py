@@ -49,7 +49,7 @@ if __name__ == "__main__":
     df = df.reset_index(drop=True)
     print(df)
 
-    save_file = h5py.File(f"../../training/datasets/N_regressor_data.hdf5", "w")
+    save_file = h5py.File(f"./datasets/N_regressor_data.hdf5", "w")
 
     dset = save_file.create_dataset("data", data=df.values, dtype="f4")
 

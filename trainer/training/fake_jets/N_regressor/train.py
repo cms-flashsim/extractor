@@ -11,7 +11,7 @@ import os
 import time
 import matplotlib.pyplot as plt
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "utils"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "utils"))
 from dataset import ObjectDataset
 from N_regressor_model import N_regressor
 
@@ -116,4 +116,3 @@ if __name__ == "__main__":
     plt.ylabel("Loss")
     plt.savefig("loss_history.png")
     plt.close()
-    

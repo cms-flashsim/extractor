@@ -67,7 +67,7 @@ if __name__ == "__main__":
     test_history = []
     for epoch in range(1000):
         model.train()
-        for batch_idx, (data, target) in enumerate(train_loader):
+        for batch_idx, (target, data) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         targets = []
         outputs = []
         with torch.no_grad():
-            for data, target in test_loader:
+            for target, data in test_loader:
                 data, target = data.to(device), target.to(device)
                 output = model(data)
                 test_loss += F.mse_loss(output, target, reduction="sum").item()

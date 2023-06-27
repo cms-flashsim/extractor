@@ -116,3 +116,19 @@ if __name__ == "__main__":
     plt.ylabel("Loss")
     plt.savefig("loss_history.png")
     plt.close()
+
+    # use the data of the test set to plot the predictions
+    model.eval()
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            output = output.cpu().numpy()
+            target = target.cpu().numpy()
+            plt.scatter(target, output, s=0.1)
+            plt.plot([-1, 12], [-1, 12], color="red")
+            plt.xlabel("True number of fakes")
+            plt.ylabel("Predicted number of fakes")
+            plt.savefig("predictions.png")
+            plt.close()
+            break

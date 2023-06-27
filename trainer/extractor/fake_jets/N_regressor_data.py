@@ -35,7 +35,7 @@ def get_df(file_num):
 
     df = pd.concat([dfgl, pd.DataFrame(num_fakes, columns=['num_fakes'])], axis=1)
     df["num_fakes"] = df["num_fakes"].apply(
-        lambda x: x + 0.5  np.random.uniform(-1, 1)
+        lambda x: x + 0.5 * np.random.uniform(-1, 1)
     )
     print(df)
     return df

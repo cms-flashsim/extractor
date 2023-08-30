@@ -168,7 +168,7 @@ def validate(
     for column in cols:
         mplhep.style.use("CMS")
         fig, axs = plt.subplots(
-            2, 1, figsize=(12, 12), tight_layout=False, width_ratios=[3, 1]
+            2, 1, figsize=(12, 12), tight_layout=False, height_ratios=[3, 1]
         )
         mplhep.cms.text("Simulation Preliminary")
 

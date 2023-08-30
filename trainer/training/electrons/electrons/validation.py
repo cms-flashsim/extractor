@@ -130,6 +130,24 @@ def validate(
 
     range_dict = {}
 
+    for column in reco_columns:
+        fig, axs = plt.subplots(1, 2, figsize=(9, 4.5), tight_layout=False)
+        # RECO histogram
+        _, rangeR, _ = axs[0].hist(
+            reco[column], histtype="step", lw=1, bins=100, label="FullSim"
+        )
+        # Saturation based on FullSim range
+        saturated_samples[column] = np.where(
+            samples[column] < np.min(rangeR), np.min(rangeR), samples[column]
+        )
+        saturated_samples[column] = np.where(
+            saturated_samples[column] > np.max(rangeR),
+            np.max(rangeR),
+            saturated_samples[column],
+        )
+        range_dict[column] = [float(np.min(rangeR)), float(np.max(rangeR))]
+        plt.close()
+
     for df in [reco, samples, saturated_samples]:
         df["Electron_pt"] = df["Electron_ptRatio"] * gen["GenElectron_pt"]
         df["Electron_eta"] = df["Electron_etaMinusGen"] + gen["GenElectron_eta"]

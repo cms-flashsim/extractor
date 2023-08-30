@@ -175,7 +175,7 @@ def validate(
             height_ratios=[3, 1],
             sharex=True,
         )
-        mplhep.cms.text("Private Work", ax=axs[0], loc=1)
+        mplhep.cms.text("Private Work", ax=axs[0], loc=0)
 
         # RECO histogram
         ns0, rangeR, _ = axs[0].hist(

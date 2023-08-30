@@ -168,9 +168,14 @@ def validate(
     for column in cols:
         mplhep.style.use("CMS")
         fig, axs = plt.subplots(
-            2, 1, figsize=(12, 12), tight_layout=False, height_ratios=[3, 1]
+            2,
+            1,
+            figsize=(24, 32),
+            tight_layout=False,
+            height_ratios=[3, 1],
+            sharex=True,
         )
-        mplhep.cms.text("Simulation Preliminary")
+        mplhep.cms.text("Private Work", ax=axs[0], loc=1)
 
         # RECO histogram
         ns0, rangeR, _ = axs[0].hist(
@@ -199,13 +204,12 @@ def validate(
             bins=100,
             label=f"FlashSim, ws={round(ws, 4)}",
         )
-        axs[0].set_xscale("log" if column in logscale else "linear")
+        axs[0].set_yscale("log" if column in logscale else "linear")
         axs[0].legend(frameon=False, loc="upper right")
 
         # FlashSim/FullSim ratio
         axs[1].plot(bins1[:-1], ns1 / ns0, marker="o", ls="none", color="black")
-        axs[1].set_ylim(-2, 2)
-        axs[1].set_xlim(np.min(rangeR), np.max(rangeR))
+        axs[1].set_ylim(0, 2)
         axs[1].axhline(1, ls="--", color="gray")
 
         axs[0].set_ylabel("Entries")
@@ -362,7 +366,7 @@ def validate(
 
     names = [
         r"$p_T$ [GeV]",
-        r"$\Detlta\eta_{SC}$",
+        r"$\Delta\eta_{SC}$",
         r"$H/E$",
         r"$\sigma_{i\eta i\eta}$",
         r"$R_9$",

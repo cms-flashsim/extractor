@@ -151,9 +151,9 @@ def validate(
         plt.close()
 
     for df in [reco, samples, saturated_samples]:
-        df["Electron_pt"] = df["Electron_ptRatio"] * gen["GenElectron_pt"]
-        df["Electron_eta"] = df["Electron_etaMinusGen"] + gen["GenElectron_eta"]
-        df["Electron_phi"] = df["Electron_phiMinusGen"] + gen["GenElectron_phi"]
+        df["Electron_pt"] = df["Electron_ptRatio"] * gen["GenJet_pt"]
+        df["Electron_eta"] = df["Electron_etaMinusGen"] + gen["GenJet_eta"]
+        df["Electron_phi"] = df["Electron_phiMinusGen"] + gen["GenJet_phi"]
 
     # 1D FlashSim/FullSim comparison
 

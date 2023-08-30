@@ -170,7 +170,7 @@ def validate(
         fig, axs = plt.subplots(
             2,
             1,
-            figsize=(24, 32),
+            figsize=(12, 16),
             tight_layout=False,
             height_ratios=[3, 1],
             sharex=True,

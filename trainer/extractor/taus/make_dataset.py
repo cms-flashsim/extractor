@@ -4,7 +4,7 @@ import json
 from taus import extract_taus
 
 # for Local run
-root = "/mnt/c/Users/Thammachath/Desktop/Code/Project/raw_data/NanoAOD_v9/trainer/"
+root = "/mnt/c/Users/Thammachath/Desktop/Code/Project/raw_data/NanoAOD_v9/"
 
 # for CU e-Science run
 #root = "/work/project/cms/thammachath/NanoAOD_v9/"

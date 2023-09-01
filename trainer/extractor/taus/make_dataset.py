@@ -3,7 +3,11 @@ import json
 
 from taus import extract_taus
 
-root = "/mnt/c/Users/Thammachath/Desktop/Code/Project/raw_data/NanoAOD_v9/trainer/"
+# for Local run
+root = "/mnt/c/Users/Thammachath/Desktop/Code/Project/raw_data/NanoAOD_v9/"
+
+# for CU e-Science run
+#root = "/work/project/cms/thammachath/NanoAOD_v9/"
 
 ttbar_training_files = [
     "143F7726-375A-3D48-9D53-D6B071CED8F6.root",

@@ -86,7 +86,7 @@ def add_args(parser):
     parser.add_argument(
         "--epochs",
         type=int,
-        default=500, 
+        default=400, 
         help="Number of epochs for training (default: 500)",
     )
     parser.add_argument(
@@ -95,9 +95,9 @@ def add_args(parser):
 
     # data options
     parser.add_argument("--train_start", type=int, default=0)
-    parser.add_argument("--train_limit", type=int, default=8000000)
+    parser.add_argument("--train_limit", type=int, default=5000000)
     parser.add_argument("--test_start", type=int, default=0)
-    parser.add_argument("--test_limit", type=int, default=400000)
+    parser.add_argument("--test_limit", type=int, default=500000)
 
     # logging and saving frequency
     parser.add_argument(

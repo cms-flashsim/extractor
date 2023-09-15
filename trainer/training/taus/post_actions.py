@@ -33,6 +33,7 @@ target_dictionary = {
     ], 
  'idDeepTau2017v2p1VSe': [["d", None, None]],
  'idDeepTau2017v2p1VSjet': [["d", None, None]],
+ 'decayMode': [["udm"]],
  'charge': [["c", 0.0, [-1, 1]]], 
  'idDeepTau2017v2p1VSmu': [["d", None, None]],
  'idAntiMu': [["d", None, None]],

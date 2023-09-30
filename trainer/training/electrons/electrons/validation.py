@@ -430,3 +430,50 @@ def validate(
     )
     plt.savefig(f"{save_dir}/Supercluster_corner_cms.png", format="png")
     plt.savefig(f"{save_dir}/Supercluster_corner_cms.pdf", format="pdf")
+
+    fig = corner.corner(
+        [reco["Electron_charge"], gen["GenElectron_charge"]],
+        range=[(-1, 1), (-1, 1)],
+        labels=[["RECO charge"], ["GEN charge"]],
+        color="tab:blue",
+        levels=[0.5, 0.9, 0.99],
+        hist_bin_factor=3,
+        scale_hist=True,
+        plot_datapoints=False,
+        hist_kwargs={"ls": "--"},
+        contour_kwargs={"linestyles": "--"},
+        label_kwargs={"fontsize": 16},
+    )
+
+    corner.corner(
+        [samples["Electron_charge"], gen["GenElectron_charge"]],
+        range=[(-1, 1), (-1, 1)],
+        labels=[["FlashSim charge"], ["GEN charge"]],
+        fig=fig,
+        color="tab:orange",
+        levels=[0.5, 0.9, 0.99],
+        hist_bin_factor=3,
+        scale_hist=True,
+        plot_datapoints=False,
+        label_kwargs={"fontsize": 16},
+    )
+
+    plt.legend(
+        fontsize=24,
+        frameon=False,
+        handles=[blue_line, red_line],
+        bbox_to_anchor=(0.0, 1.0, 1.0, 4.0),
+        loc="upper right",
+    )
+
+    plt.suptitle(
+        r"$\bf{CMS}$ $\it{Private \; Work}$",
+        fontsize=16,
+        x=0.29,
+        y=1.0,
+        horizontalalignment="right",
+        fontname="sans-serif",
+    )
+
+    plt.savefig(f"{save_dir}/Charge_corner_cms.png", format="png")
+    plt.savefig(f"{save_dir}/Charge_corner_cms.pdf", format="pdf")

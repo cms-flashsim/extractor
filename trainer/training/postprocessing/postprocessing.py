@@ -69,8 +69,8 @@ def restore_range(column_name, scale_dict, df):
     return df[column_name]
 
 
-def inverse_transform(df, column_name, function, p):
-    df[column_name] = df[column_name].apply(lambda x: (function(x) - p[1]) / p[0])
+def inverse_transform(df, column_name, function, p, *args):
+    df[column_name] = df[column_name].apply(lambda x: (function(*args, x) - p[1]) / p[0])
     return df[column_name]
 
 
@@ -197,7 +197,11 @@ def process_column_var(column_name, operations, df, gen_df, saturate_ranges_path
         elif op[0] == "i":
             function = op[1]
             p = op[2]
-            df[column_name] = inverse_transform(df, column_name, function, p)
+            if len(op) == 3:
+                df[column_name] = inverse_transform(df, column_name, function, p)
+            else:
+                args = op[3]
+                df[column_name] = inverse_transform(df, column_name, function, p, args)
 
         elif op[0] == "m":
             gen_column_name = op[1]

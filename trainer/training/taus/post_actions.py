@@ -31,11 +31,20 @@ target_dictionary = {
  'leadTkPtOverTauPt': [
         ["i", np.tan, [10, -10]],
     ], 
- 'idDeepTau2017v2p1VSe': [["d", None, None]],
- 'idDeepTau2017v2p1VSjet': [["d", None, None]],
+ 'idDeepTau2017v2p1VSe': [
+     ["d", None, None],
+     ["i", np.power, [1, 0], 2]
+     ],
+ 'idDeepTau2017v2p1VSjet': [
+     ["d", None, None],
+     ["i", np.power, [1, 0], 2]
+     ],
  'decayMode': [["udm"]],
  'charge': [["c", 0.0, [-1, 1]]], 
- 'idDeepTau2017v2p1VSmu': [["d", None, None]],
+ 'idDeepTau2017v2p1VSmu': [
+     ["d", None, None],
+     ["i", np.power, [1, 0], 2]
+     ],
  'idAntiMu': [["d", None, None]],
  'idDecayModeOldDMs': [["d", None, None]],
  'idAntiEleDeadECal': [["d", None, None]],

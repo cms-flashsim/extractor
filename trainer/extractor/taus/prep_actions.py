@@ -40,11 +40,20 @@ target_dictionary_taus = {
         ["manual_range", [0.1, 5]],
         ["t", np.arctan, [10, -10]],
     ],
-    "MTau_idDeepTau2017v2p1VSe": [["u", 0.5, None]],
-    "MTau_idDeepTau2017v2p1VSjet": [["u", 0.5, None]],
+    "MTau_idDeepTau2017v2p1VSe": [
+        ["t", np.log2, [1, 1]],
+        ["u", 0.5, None]
+    ],
+    "MTau_idDeepTau2017v2p1VSjet": [
+        ["t", np.log2, [1, 1]],
+        ["u", 0.5, None]
+    ],
     #"MTau_decayMode",
     "MTau_charge": [["u", 1, None]],
-    "MTau_idDeepTau2017v2p1VSmu": [["u", 0.5, None]],
+    "MTau_idDeepTau2017v2p1VSmu": [
+        ["t", np.log2, [1, 1]],
+        ["u", 0.5, None]
+    ],
     "MTau_idAntiMu": [['u', 0.5, None]],
     "MTau_idDecayModeOldDMs": [["u", 0.5, None]],
     "MTau_idAntiEleDeadECal": [["u", 0.5, None]],

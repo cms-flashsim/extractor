@@ -69,8 +69,8 @@ def restore_range(column_name, scale_dict, df):
     return df[column_name]
 
 
-def inverse_transform(df, column_name, function, p):
-    df[column_name] = df[column_name].apply(lambda x: (function(x) - p[1]) / p[0])
+def inverse_transform(df, column_name, function, p, *args):
+    df[column_name] = df[column_name].apply(lambda x: (function(*args, x) - p[1]) / p[0])
     return df[column_name]
 
 
@@ -141,6 +141,20 @@ def unsmear_jetId(df, column_name):
     return df[column_name]
 
 
+def unsmear_decayMode(df, column_name): #under development
+    """Unsmear the decayMode setting values to 0, 1, 2, 5, 6, 7, 10, 11"""
+    val = df[column_name].values
+    val = np.rint(val)
+    val = np.where(val <= 0, 0, val)
+    val = np.where(val == 3, 5, val)
+    val = np.where(val == 4, 5, val)
+    val = np.where(val == 8, 10, val)
+    val = np.where(val == 9, 10, val)
+    val = np.where(val >= 11, 11, val)
+    df[column_name] = val
+    return df[column_name]
+
+
 def cut_unsmearing(df, column_name, cut, x1, x2):
     val = df[column_name].values
     df[column_name] = np.where(val < cut, x1, x2)
@@ -172,6 +186,9 @@ def process_column_var(column_name, operations, df, gen_df, saturate_ranges_path
         elif op[0] == "uj":
             df[column_name] = unsmear_jetId(df, column_name)
 
+        elif op[0] == "udm":
+            df[column_name] = unsmear_decayMode(df, column_name) #under development
+
         elif op[0] == "c":
             cut = op[1]
             vals = op[2]
@@ -180,7 +197,11 @@ def process_column_var(column_name, operations, df, gen_df, saturate_ranges_path
         elif op[0] == "i":
             function = op[1]
             p = op[2]
-            df[column_name] = inverse_transform(df, column_name, function, p)
+            if len(op) == 3:
+                df[column_name] = inverse_transform(df, column_name, function, p)
+            else:
+                args = op[3]
+                df[column_name] = inverse_transform(df, column_name, function, p, args)
 
         elif op[0] == "m":
             gen_column_name = op[1]

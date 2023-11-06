@@ -11,7 +11,7 @@ from torch.backends import (
 import torch.multiprocessing as mp
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 sys.path.insert(0, os.path.join("..", "..", "utils"))
 sys.path.insert(0, os.path.join("..", "..", "models"))

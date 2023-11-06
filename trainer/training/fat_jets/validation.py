@@ -219,6 +219,7 @@ def validate_fatjets(
         "MgenjetAK8_mass",
         "MgenjetAK8_ncFlavour",
         "MgenjetAK8_nbFlavour",
+        "has_H_within_0_8",
         "is_signal",
     ]
 

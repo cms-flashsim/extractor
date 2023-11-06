@@ -120,7 +120,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             "init_identity": args.init_identity,
             "permute_type": args.permute_type,
             "affine_type": args.affine_type,
-    }
+    }}
 
     model = create_mixture_flow_model(**flow_param_dict)
 

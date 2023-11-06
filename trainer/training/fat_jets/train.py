@@ -97,25 +97,29 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         "base_kwargs": {
             "num_steps_maf": args.num_steps_maf,
             "num_steps_arqs": args.num_steps_arqs,
+            "num_steps_caf": args.num_steps_caf,
+            "coupling_net": args.coupling_net,
+            "att_embed_shape": args.att_embed_shape,
+            "att_num_heads": args.att_num_heads,
             "num_transform_blocks_maf": args.num_transform_blocks_maf,  # DNN layers per coupling
             "num_transform_blocks_arqs": args.num_transform_blocks_arqs,  # DNN layers per coupling
             "activation": args.activation,
             "dropout_probability_maf": args.dropout_probability_maf,
             "dropout_probability_arqs": args.dropout_probability_arqs,
+            "dropout_probability_caf": args.dropout_probability_caf,
             "use_residual_blocks_maf": args.use_residual_blocks_maf,
             "use_residual_blocks_arqs": args.use_residual_blocks_arqs,
             "batch_norm_maf": args.batch_norm_maf,
             "batch_norm_arqs": args.batch_norm_arqs,
+            "batch_norm_caf": args.batch_norm_caf,
             "num_bins_arqs": args.num_bins,
             "tail_bound_arqs": args.tail_bound,
             "hidden_dim_maf": args.hidden_dim_maf,
             "hidden_dim_arqs": args.hidden_dim_arqs,
-            # "base_transform_type": args.base_transform_type,  # "rq-autoregressive",
-            # "block_size": args.block_size,  # useless param if we have alternating-binary mask
-            # "mask_type": args.mask_type,
+            "hidden_dim_caf": args.hidden_dim_caf,
             "init_identity": args.init_identity,
-        },
-        "transform_type": args.transform_type,
+            "permute_type": args.permute_type,
+            "affine_type": args.affine_type,
     }
 
     model = create_mixture_flow_model(**flow_param_dict)

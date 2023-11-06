@@ -84,7 +84,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         log_dir = "runs/time-%d" % time.time()
 
     if not args.distributed or (args.rank % ngpus_per_node == 0):
-        writer = SummaryWriter(logdir=log_dir)
+        writer = SummaryWriter(log_dir=log_dir)
         # save hparams to tensorboard
         writer.add_hparams(vars(args), {})
     else:

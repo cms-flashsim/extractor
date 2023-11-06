@@ -62,4 +62,4 @@ if __name__ == "__main__":
     plt.hist(df_selected["Mfatjet_particleNetMD_XbbvsQCD"], bins=100)
     plt.show()
     # save
-    # df_selected.to_pickle("fatjet_oversampled.pkl")
+    df_selected.to_pickle("fatjet_oversampled.pkl")

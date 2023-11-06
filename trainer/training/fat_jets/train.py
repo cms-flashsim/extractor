@@ -249,7 +249,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
             train_sampler.set_epoch(epoch)
 
         if writer is not None:
-            writer.add_scalar("lr/optimizer", scheduler.get_last_lr(), epoch)
+            writer.add_scalar("lr/optimizer", np.array(scheduler.get_last_lr()), epoch)
 
         # train for one epoch
         train_loss = 0.0

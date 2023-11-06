@@ -66,7 +66,7 @@ def add_args(parser):
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=2048 * 3,
+        default=512,
         help="Batch size (of datasets) for training",
     )
     parser.add_argument(
@@ -164,7 +164,7 @@ def add_args(parser):
     )
     parser.add_argument(
         "--gpu",
-        default=None,
+        default=0,
         type=int,
         help="GPU id to use. None means using all available GPUs.",
     )

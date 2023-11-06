@@ -1,6 +1,7 @@
 import h5py
 import torch
 from torch.utils.data import Dataset
+import pandas as pd
 
 
 class ObjectDataset(Dataset):
@@ -41,3 +42,49 @@ class ObjectDataset(Dataset):
     def __getitem__(self, idx):
         return self.x_train[idx], self.y_train[idx]
 
+
+class FatJetsDataset(Dataset):
+    """Very simple Dataset for reading hdf5 data
+        This is way simpler than muons as we heve enough jets in a single file
+        Still, dataloading is a bottleneck even here
+    Args:
+        Dataset (Pytorch Dataset): Pytorch Dataset class
+    """
+
+    def __init__(self, pkl_paths, start, limit):
+        self.pkl_paths = pkl_paths
+        self.df = pd.read_pickle(self.pkl_paths[0])
+
+        y = self.df[
+            [
+                "MgenjetAK8_pt",
+                "MgenjetAK8_phi",
+                "MgenjetAK8_eta",
+                "MgenjetAK8_hadronFlavour",
+                "MgenjetAK8_partonFlavour",
+                "MgenjetAK8_mass",
+                "MgenjetAK8_ncFlavour",
+                "MgenjetAK8_nbFlavour",
+                "has_H_within_0_8",
+                "is_signal",
+            ]
+        ].values[start:limit]
+
+        x = self.df[
+            [
+                "Mpt_ratio",
+                "Meta_sub",
+                "Mphi_sub",
+                "Mfatjet_msoftdrop",
+                "Mfatjet_particleNetMD_XbbvsQCD",
+            ]
+        ].values[start:limit]
+
+        self.x_train = torch.tensor(x, dtype=torch.float32)
+        self.y_train = torch.tensor(y, dtype=torch.float32)
+
+    def __len__(self):
+        return len(self.y_train)
+
+    def __getitem__(self, idx):
+        return self.x_train[idx], self.y_train[idx]

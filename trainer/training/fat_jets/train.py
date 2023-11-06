@@ -186,12 +186,12 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
     dirpath = os.path.dirname(__file__)
 
     tr_dataset = FatJetsDataset(
-        [os.path.join(dirpath, "..", "datasets", "preprocessed.pkl")],
+        [os.path.join(dirpath, "..", "datasets", "fatjet_oversampled.pkl")],
             start=0,
             limit=args.train_limit,
     )
     te_dataset = FatJetsDataset(
-        [os.path.join(dirpath, "..", "datasets", "preprocessed.pkl")],
+        [os.path.join(dirpath, "..", "datasets", "fatjet_oversampled.pkl")],
             start=args.train_limit,
             limit=args.test_limit+args.train_limit,
     )
@@ -260,7 +260,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
             if gpu is not None:
                 z = z.cuda(args.gpu, non_blocking=True)
-                y = y.cuda(args.gpu, non_blocking=True)
+                y = y.cuda(args.gpu, non_blocking=True)[:, :args.y_dim]
 
             # Compute log prob
             log_p, log_det = ddp_model(z, context=y)
@@ -319,7 +319,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
                     if gpu is not None:
                         z = z.cuda(args.gpu, non_blocking=True)
-                        y = y.cuda(args.gpu, non_blocking=True)
+                        y = y.cuda(args.gpu, non_blocking=True)[:, :args.y_dim]
 
                     # Compute log prob
                     log_p, log_det = ddp_model(z, context=y)

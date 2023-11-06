@@ -51,6 +51,8 @@ if __name__ == "__main__":
     df_selected = pd.concat([df_selected, pd.DataFrame(sig_values, columns=df_selected.columns)])
     # shuffle df
     df_selected = df_selected.sample(frac=1).reset_index(drop=True)
+
+
     # print is_signal values
     # print(df_selected["is_signal"].values[45:70])
 

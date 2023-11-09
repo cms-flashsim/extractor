@@ -131,11 +131,14 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         args.resume_checkpoint = os.path.join(
             save_dir, "checkpoint-latest.pt"
         )  # use the latest checkpoint
+        resume_checkpoint = args.resume_checkpoint
+    else:
+        resume_checkpoint = args.resume_checkpoint
     if args.resume_checkpoint is not None and args.resume == True:
         model, _, args.lr, start_epoch, _, _,  optimizer_state_dict = load_mixture_model(
             model,
             model_dir=save_dir,
-            filename="checkpoint-latest.pt",
+            filename=resume_checkpoint,
         )
         print(f"Resumed from: {start_epoch}")
 

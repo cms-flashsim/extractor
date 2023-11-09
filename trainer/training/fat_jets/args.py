@@ -94,6 +94,7 @@ def add_args(parser):
     )
 
     # data options
+    parser.add_argument("--remove_sig_not_H", default=False, action="store_true")
     parser.add_argument("--train_start", type=int, default=0)
     parser.add_argument("--train_limit", type=int, default=700000)
     parser.add_argument("--test_start", type=int, default=0)

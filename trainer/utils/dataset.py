@@ -51,9 +51,13 @@ class FatJetsDataset(Dataset):
         Dataset (Pytorch Dataset): Pytorch Dataset class
     """
 
-    def __init__(self, pkl_paths, start, limit):
+    def __init__(self, pkl_paths, start, limit, remove_sig_not_H=False):
         self.pkl_paths = pkl_paths
         self.df = pd.read_pickle(self.pkl_paths[0])
+
+        if remove_sig_not_H:
+            # remove all is_signal==1 but has_H_within_0_8==0
+            self.df = self.df[~((self.df['is_signal'] == 1) & (self.df['has_H_within_0_8'] == 0))]
 
         y = self.df[
             [

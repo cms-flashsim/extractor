@@ -654,7 +654,7 @@ def validate_fatjets(
         sup = rangeR[1]
         legend_elements = []
         for cond, color, name in zip(conds, colors, names):
-            has_not_H = ~df["has_H_within_0_8"].values
+            has_not_H = ~df["has_H_within_0_8"].values.astype(bool)
             nb = df["is_signal"].values
             mask = np.where(nb == cond, True, False)
             mask = np.logical_and(mask, has_not_H)

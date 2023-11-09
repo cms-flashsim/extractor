@@ -626,6 +626,87 @@ def validate_fatjets(
             writer.add_figure(f"{target}_HorN", fig, global_step=epoch)
         else:
             writer.add_figure(f"{epoch}/{target}_HorN", fig)
+   
+   ### softdrop on has H NOT within 0.8 sig & bkg
+    targets = ["Mfatjet_particleNetMD_XbbvsQCD", "Mfatjet_msoftdrop"]
+
+    ranges = [[-0.1, 1], [50, 500]]
+
+    conds = [0, 1]
+
+    names = [
+        "bkg",
+        "sig",
+    ]
+
+    colors = ["tab:red", "tab:green"]
+
+    for target, rangeR in zip(targets, ranges):
+        hep.style.use("CMS")
+
+        fig, axs = plt.subplots(1, 1)  # , figsize=(9, 4.5), tight_layout=False)
+        hep.cms.text("Simulation Preliminary")
+        axs.set_xlabel(f"{target}", fontsize=35)
+
+        # axs.set_yscale("log")
+
+        inf = rangeR[0]
+        sup = rangeR[1]
+        legend_elements = []
+        for cond, color, name in zip(conds, colors, names):
+            has_not_H = ~df["has_H_within_0_8"].values
+            nb = df["is_signal"].values
+            mask = np.where(nb == cond, True, False)
+            mask = np.logical_and(mask, has_not_H)
+            full = reco[target].values
+            full_disc = reco["Mfatjet_particleNetMD_XbbvsQCD"].values
+            full = full[mask]
+            full_disc = full_disc[mask]
+            full = full[~np.isnan(full)]
+            full = np.where(full > sup, sup, full)
+            full = np.where(full < inf, inf, full)
+            # take only jets with discriminant > 0.95
+            full = full[ full_disc > 0.95]
+
+            flash = samples[target].values
+            flash_disc = samples["Mfatjet_particleNetMD_XbbvsQCD"].values
+            flash = flash[mask]
+            flash_disc = flash_disc[mask]
+            flash = flash[~np.isnan(flash)]
+            flash = np.where(flash > sup, sup, flash)
+            flash = np.where(flash < inf, inf, flash)
+            # take only jets with discriminant > 0.95
+            flash = flash[flash_disc > 0.95]
+
+            axs.hist(
+                full, bins=25, range=rangeR, histtype="step", ls="--", lw=2, color=color, density=True,
+            )
+            axs.hist(
+                flash,
+                bins=25,
+                lw=2,
+                range=rangeR,
+                histtype="step",
+                color=color,
+                # normalize
+                density=True,
+            )
+            legend_elements.append(
+                Patch(edgecolor=color, fill=False, lw=2, label=f"{name}")
+            )
+
+        legend_elements += [
+            Patch(edgecolor="k", fill=False, ls="-", lw=2, label="FlashSim"),
+            Patch(edgecolor="k", fill=False, ls="--", lw=2, label="FullSim"),
+        ]
+
+        axs.legend(frameon=False, loc="upper center", handles=legend_elements)
+        plt.savefig(f"{save_dir}/{target}_notHSVB.png")
+        plt.savefig(f"{save_dir}/{target}_notHSVB.pdf")
+        if isinstance(epoch, int):
+            writer.add_figure(f"{target}_notHSVB", fig, global_step=epoch)
+        else:
+            writer.add_figure(f"{epoch}/{target}_notHSVB", fig)
     # ROC
     fpr, tpr, roc_auc, bs, nbs = makeROC(samples.values, df.values, 1)
     cfpr, ctpr, croc_auc, cbs, cnbs = makeROC(reco.values, df.values, 1)

@@ -796,7 +796,7 @@ def load_mixture_model(device, model_dir=None, filename=None):
     # Set the epoch to the correct value. This is needed to resume
     # training.
     epoch = checkpoint["epoch"]
-
+    optim_state = checkpoint["optimizer_state_dict"]
     return (
         model,
         scheduler_present_in_checkpoint,
@@ -804,4 +804,5 @@ def load_mixture_model(device, model_dir=None, filename=None):
         epoch,
         train_history,
         test_history,
+        optim_state,
     )

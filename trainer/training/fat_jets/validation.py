@@ -95,6 +95,11 @@ def makeROC(gen, gen_df, nb):
 
     return fpr, tpr, roc_auc, s, b
 
+def postprocess_disc(disc):
+    range_disc = 21.543403195332097
+    min = -0.7688173116541402
+    disc = np.where(disc<min, -0.1, (np.tanh(disc*range_disc)+1)/2)
+    return disc
 
 def validate_fatjets(
     test_loader,
@@ -238,6 +243,9 @@ def validate_fatjets(
         samples[:, 2] > np.pi, samples[:, 2] - 2 * np.pi, samples[:, 2]
     )
     samples[:, 0] = samples[:, 0] * df["MgenjetAK8_pt"].values
+    
+    #post process disc
+    samples[:, 4] = postprocess_disc(samples[:, 4])
 
     # Reco postprocessing
 
@@ -247,12 +255,9 @@ def validate_fatjets(
     reco[:, 2] = np.where(reco[:, 2] < -np.pi, reco[:, 2] + 2 * np.pi, reco[:, 2])
     reco[:, 2] = np.where(reco[:, 2] > np.pi, reco[:, 2] - 2 * np.pi, reco[:, 2])
     reco[:, 0] = reco[:, 0] * df["MgenjetAK8_pt"].values
-    # reco[:, 7] = reco[:, 7] + df['GenJet_eta'].values
-    # reco[:, 9] = reco[:, 9] * df['GenJet_mass'].values
-    # reco[:, 11] = reco[:, 11] +  df['GenJet_phi'].values
-    # reco[:, 11]= np.where( reco[:, 11]< -np.pi, reco[:, 11] + 2*np.pi, reco[:, 11])
-    # reco[:, 11]= np.where( reco[:, 11]> np.pi, reco[:, 11] - 2*np.pi, reco[:, 11])
-    # reco[:, 12] = reco[:, 12] * df['GenJet_pt'].values
+
+    #post process disc
+    reco[:, 4] = postprocess_disc(reco[:, 4])
 
     # Plots
     names = [

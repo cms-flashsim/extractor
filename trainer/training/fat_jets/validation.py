@@ -190,6 +190,13 @@ def validate_fatjets(
         )
         fig.suptitle(f"Comparison of {names[i]}", fontsize=16)
         ax1.legend(frameon=False, loc="upper right")
+        ax1.set_xlabel(f"{names[i]}", fontsize=35)
+        plt.savefig(f"{save_dir}/{names[i]}.png")
+        plt.savefig(f"{save_dir}/{names[i]}.pdf")
+        if isinstance(epoch, int):
+            writer.add_figure(f"{names[i]}", fig, global_step=epoch)
+        else:
+            writer.add_figure(f"{epoch}/{names[i]}", fig)
 
         # ax1.spines["right"].set_visible(False)
         # ax1.spines["top"].set_visible(False)
@@ -207,12 +214,14 @@ def validate_fatjets(
             lw=1,
             range=[rangeR.min(), rangeR.max()],
         )
-        plt.savefig(f"{save_dir}/{names[i]}.png")
-        plt.savefig(f"{save_dir}/{names[i]}.pdf")
+        ax2.legend(frameon=False, loc="upper right")
+        ax2.set_xlabel(f"{names[i]}", fontsize=35)
+        plt.savefig(f"{save_dir}/{names[i]}_log.png")
+        plt.savefig(f"{save_dir}/{names[i]}_log.pdf")
         if isinstance(epoch, int):
-            writer.add_figure(f"{names[i]}", fig, global_step=epoch)
+            writer.add_figure(f"{names[i]}_log", fig, global_step=epoch)
         else:
-            writer.add_figure(f"{epoch}/{names[i]}", fig)
+            writer.add_figure(f"{epoch}/{names[i]}_log", fig)
 
     plt.close()
 

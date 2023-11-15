@@ -166,9 +166,11 @@ def validate_fatjets(
     ]
 
     for i in range(0, args.x_dim):
+        hep.style.use("CMS")
         ws = wasserstein_distance(reco[:, i], samples[:, i])
 
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4.5), tight_layout=False)
+        hep.cms.text("Simulation Preliminary")
 
         _, rangeR, _ = ax1.hist(
             reco[:, i], histtype="step", label="FullSim", lw=1, bins=100
@@ -1003,6 +1005,8 @@ def validate_fatjets(
     samples1 = [samples, sig_samples, bkg_samples]
     titles = ["Fatjet_softdrop", "Fatjet_softdrop (signal)", "Fatjet_softdrop (bkg)"]
     for i in range(0, 3):
+        hep.style.use("CMS")
+
         reco1 = recos[i][["Mfatjet_msoftdrop"]].values.flatten()
         samples2 = samples1[i][["Mfatjet_msoftdrop"]].values.flatten()
         ws = wasserstein_distance(reco1, samples2)

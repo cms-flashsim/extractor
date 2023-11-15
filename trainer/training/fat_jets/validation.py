@@ -169,7 +169,7 @@ def validate_fatjets(
         hep.style.use("CMS")
         ws = wasserstein_distance(reco[:, i], samples[:, i])
 
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4.5), tight_layout=False)
+        fig, (ax1, ax2) = plt.subplots(1, 2, tight_layout=False)
         hep.cms.text("Simulation Preliminary")
 
         _, rangeR, _ = ax1.hist(

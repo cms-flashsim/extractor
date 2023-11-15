@@ -169,9 +169,8 @@ def validate_fatjets(
         hep.style.use("CMS")
         ws = wasserstein_distance(reco[:, i], samples[:, i])
 
-        fig, (ax1, ax2) = plt.subplots(1, 2, tight_layout=False)
+        fig, ax1 = plt.subplots(1, 1)
         hep.cms.text("Simulation Preliminary")
-
         _, rangeR, _ = ax1.hist(
             reco[:, i], histtype="step", label="FullSim", lw=1, bins=100
         )
@@ -192,10 +191,12 @@ def validate_fatjets(
         fig.suptitle(f"Comparison of {names[i]}", fontsize=16)
         ax1.legend(frameon=False, loc="upper right")
 
-        ax1.spines["right"].set_visible(False)
-        ax1.spines["top"].set_visible(False)
-        ax2.spines["right"].set_visible(False)
-        ax2.spines["top"].set_visible(False)
+        # ax1.spines["right"].set_visible(False)
+        # ax1.spines["top"].set_visible(False)
+        # ax2.spines["right"].set_visible(False)
+        # ax2.spines["top"].set_visible(False)
+        fig, ax2 = plt.subplots(1, 1)
+        hep.cms.text("Simulation Preliminary")
         ax2.set_yscale("log")
 
         ax2.hist(reco[:, i], histtype="step", lw=1, bins=100)

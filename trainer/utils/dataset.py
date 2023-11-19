@@ -69,7 +69,7 @@ class FatJetsDataset(Dataset):
                 "MgenjetAK8_mass",
                 "MgenjetAK8_ncFlavour",
                 "MgenjetAK8_nbFlavour",
-                "has_H_within_0_8",
+                "Mhas_H_within_0_8",
                 "is_signal",
             ]
         ].values[start:limit]

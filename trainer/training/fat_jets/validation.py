@@ -96,9 +96,9 @@ def makeROC(gen, gen_df, nb):
     return fpr, tpr, roc_auc, s, b
 
 def postprocess_disc(disc):
-    range_disc = 21.543403195332097
-    min = -0.7688173116541402
-    disc = np.where(disc<min, -0.1, (np.tanh(disc*range_disc)+1)/2)
+    range_disc = 20.56
+    min = -0.8281470664258219
+    disc = np.where(disc < min, -0.1, (np.tanh(disc * range_disc) + 1) / 2)
     return disc
 
 def validate_fatjets(
@@ -256,9 +256,6 @@ def validate_fatjets(
     )
     samples[:, 0] = samples[:, 0] * df["MgenjetAK8_pt"].values
     
-    #post process disc
-    samples[:, 4] = postprocess_disc(samples[:, 4])
-
     # Reco postprocessing
 
     reco[:, 1] = reco[:, 1] + df["MgenjetAK8_eta"].values
@@ -268,8 +265,10 @@ def validate_fatjets(
     reco[:, 2] = np.where(reco[:, 2] > np.pi, reco[:, 2] - 2 * np.pi, reco[:, 2])
     reco[:, 0] = reco[:, 0] * df["MgenjetAK8_pt"].values
 
-    #post process disc
-    reco[:, 4] = postprocess_disc(reco[:, 4])
+    if args.reshaped:
+        #post process disc
+        samples[:, 4] = postprocess_disc(samples[:, 4])
+        reco[:, 4] = postprocess_disc(reco[:, 4])
 
     # Plots
     names = [

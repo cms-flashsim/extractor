@@ -189,18 +189,32 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
     dirpath = os.path.dirname(__file__)
 
-    tr_dataset = FatJetsDataset(
-        [os.path.join(dirpath, "..", "datasets", "fatjet_oversampled.pkl")],
-            start=0,
-            limit=args.train_limit,
-            remove_sig_not_H=args.remove_sig_not_H,
-    )
-    te_dataset = FatJetsDataset(
-        [os.path.join(dirpath, "..", "datasets", "fatjet_oversampled.pkl")],
-            start=args.train_limit,
-            limit=args.test_limit+args.train_limit,
-            remove_sig_not_H=args.remove_sig_not_H,
-    )
+    if not args.rehsaped:
+        tr_dataset = FatJetsDataset(
+            [os.path.join(dirpath, "..", "datasets", "fatjet_train.pkl")],
+                start=0,
+                limit=args.train_limit,
+                remove_sig_not_H=args.remove_sig_not_H,
+        )
+        te_dataset = FatJetsDataset(
+            [os.path.join(dirpath, "..", "datasets", "fatjet_val.pkl")],
+                start=args.train_limit,
+                limit=args.test_limit+args.train_limit,
+                remove_sig_not_H=args.remove_sig_not_H,
+        )
+    else:
+        tr_dataset = FatJetsDataset(
+            [os.path.join(dirpath, "..", "datasets", "fatjet_train_reshaped.pkl")],
+                start=0,
+                limit=args.train_limit,
+                remove_sig_not_H=args.remove_sig_not_H,
+        )
+        te_dataset = FatJetsDataset(
+            [os.path.join(dirpath, "..", "datasets", "fatjet_val_reshaped.pkl")],
+                start=args.train_limit,
+                limit=args.test_limit+args.train_limit,
+                remove_sig_not_H=args.remove_sig_not_H,
+        )
 
     if args.distributed:
         train_sampler = torch.utils.data.distributed.DistributedSampler(tr_dataset)

@@ -189,7 +189,7 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
 
     dirpath = os.path.dirname(__file__)
 
-    if not args.rehsaped:
+    if not args.reshaped:
         tr_dataset = FatJetsDataset(
             [os.path.join(dirpath, "..", "datasets", "fatjet_train.pkl")],
                 start=0,

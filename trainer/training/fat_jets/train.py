@@ -198,8 +198,8 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         )
         te_dataset = FatJetsDataset(
             [os.path.join(dirpath, "..", "datasets", "fatjet_val.pkl")],
-                start=args.train_limit,
-                limit=args.test_limit+args.train_limit,
+                start=0,
+                limit=args.test_limit,
                 remove_sig_not_H=args.remove_sig_not_H,
         )
     else:
@@ -211,8 +211,8 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
         )
         te_dataset = FatJetsDataset(
             [os.path.join(dirpath, "..", "datasets", "fatjet_val_reshaped.pkl")],
-                start=args.train_limit,
-                limit=args.test_limit+args.train_limit,
+                start=0,
+                limit=args.test_limit,
                 remove_sig_not_H=args.remove_sig_not_H,
         )
 

@@ -128,9 +128,8 @@ def trainer(gpu, save_dir, ngpus_per_node, args, val_func):
     if args.resume_checkpoint is None and os.path.exists(
         os.path.join(save_dir, "checkpoint-latest.pt")
     ):
-        args.resume_checkpoint = os.path.join(
-            save_dir, "checkpoint-latest.pt"
-        )  # use the latest checkpoint
+        args.resume_checkpoint = "checkpoint-latest.pt"
+        # use the latest checkpoint
         resume_checkpoint = args.resume_checkpoint
     else:
         resume_checkpoint = args.resume_checkpoint

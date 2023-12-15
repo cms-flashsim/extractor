@@ -646,7 +646,7 @@ def validate_fatjets(
    ### softdrop on has H NOT within 0.8 sig & bkg
     targets = ["Mfatjet_particleNetMD_XbbvsQCD", "Mfatjet_msoftdrop"]
 
-    ranges = [[-0.1, 1], [50, 500]]
+    ranges = [[0.95, 1], [50, 500]]
 
     conds = [0, 1]
 
@@ -695,7 +695,7 @@ def validate_fatjets(
             flash = flash[flash_disc > 0.95]
 
             axs.hist(
-                full, bins=25, range=rangeR, histtype="step", ls="--", lw=2, color=color, density=True,
+                full, bins=25, range=rangeR, histtype="step", ls="--", lw=2, color=color, density=False,
             )
             axs.hist(
                 flash,
@@ -705,7 +705,7 @@ def validate_fatjets(
                 histtype="step",
                 color=color,
                 # normalize
-                density=True,
+                density=False,
             )
             legend_elements.append(
                 Patch(edgecolor=color, fill=False, lw=2, label=f"{name}")

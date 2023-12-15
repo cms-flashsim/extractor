@@ -57,7 +57,7 @@ class FatJetsDataset(Dataset):
 
         if remove_sig_not_H:
             # remove all is_signal==1 but has_H_within_0_8==0
-            self.df = self.df[~((self.df['is_signal'] == 1) & (self.df['has_H_within_0_8'] == 0))]
+            self.df = self.df[~((self.df['is_signal'] == 1) & (self.df['Mhas_H_within_0_8'] == 0))]
 
         y = self.df[
             [

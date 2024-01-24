@@ -255,6 +255,9 @@ def validate_fatjets(
         samples[:, 2] > np.pi, samples[:, 2] - 2 * np.pi, samples[:, 2]
     )
     samples[:, 0] = samples[:, 0] * df["MgenjetAK8_pt"].values
+
+    # cut samples on pt between 300 and 500
+    samples = samples[(df["MgenjetAK8_pt"] <= 500) & (300 <= df["MgenjetAK8_pt"])]
     
     # Reco postprocessing
 
@@ -264,6 +267,9 @@ def validate_fatjets(
     reco[:, 2] = np.where(reco[:, 2] < -np.pi, reco[:, 2] + 2 * np.pi, reco[:, 2])
     reco[:, 2] = np.where(reco[:, 2] > np.pi, reco[:, 2] - 2 * np.pi, reco[:, 2])
     reco[:, 0] = reco[:, 0] * df["MgenjetAK8_pt"].values
+
+    # cut reco on pt between 300 and 500
+    reco = reco[(df["MgenjetAK8_pt"] <= 500) & (300 <= df["MgenjetAK8_pt"])]
 
     if args.reshaped:
         #post process disc

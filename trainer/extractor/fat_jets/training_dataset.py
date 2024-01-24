@@ -63,7 +63,7 @@ RESHAPE = True
 if __name__ == "__main__":
     print("Starting to make dataset for fake jets")
     df = pd.read_pickle(
-        "/home/fvaselli/Documents/trainer/trainer/extractor/fat_jets/preprocessed_all_QCD_PU200_VBF_SM_and_BSM.pkl"
+        "/home/fvaselli/Documents/CMS/trainer/trainer/extractor/fat_jets/preprocessed_all_QCD_PU200_VBF_SM_and_BSM.pkl"
     )
     print(df.columns)
 

@@ -4,6 +4,12 @@ from torch.utils.data import Dataset
 import pandas as pd
 import numpy as np
 
+def postprocess_disc(disc):
+    range_disc = 20.56
+    min = -0.8281470664258219
+    disc = np.where(disc < min, -0.1, (np.tanh(disc * range_disc) + 1) / 2)
+    return disc
+
 class ObjectDataset(Dataset):
     """Dataset for Electron training
 
@@ -98,8 +104,9 @@ class DataPreprocessor:
     """Class for preprocessing the training data.
     """
 
-    def __init__(self, dataset_path):
+    def __init__(self, dataset_path, reshaped=False):
         self.df = pd.read_pickle(dataset_path)
+        self.reshaped = reshaped
     
         self.X = self.df[
             [
@@ -111,7 +118,7 @@ class DataPreprocessor:
             ]
         ].values
 
-        self.y = self.df[
+        self.Y = self.df[
             [
                 "MgenjetAK8_pt",
                 "MgenjetAK8_phi",
@@ -140,5 +147,9 @@ class DataPreprocessor:
 
         # where softdrom < 0, put -10
         X[:, 3] = np.where(X[:, 3] < 0, -10, X[:, 3])
+
+        # postprocess discriminator
+        if self.reshaped:
+            X[:, 4] = postprocess_disc(X[:, 4])
 
         return X

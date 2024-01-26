@@ -1,5 +1,10 @@
 # PKL DATA
 *.pkl
+*.pt
+
+#
+checkpoints/
+logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

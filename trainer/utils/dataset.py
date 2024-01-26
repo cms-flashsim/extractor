@@ -2,7 +2,7 @@ import h5py
 import torch
 from torch.utils.data import Dataset
 import pandas as pd
-
+import numpy as np
 
 class ObjectDataset(Dataset):
     """Dataset for Electron training
@@ -92,3 +92,53 @@ class FatJetsDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.x_train[idx], self.y_train[idx]
+
+
+class DataPreprocessor:
+    """Class for preprocessing the training data.
+    """
+
+    def __init__(self, dataset_path):
+        self.df = pd.read_pickle(dataset_path)
+    
+        self.X = self.df[
+            [
+                "Mpt_ratio",
+                "Meta_sub",
+                "Mphi_sub",
+                "Mfatjet_msoftdrop",
+                "Mfatjet_particleNetMD_XbbvsQCD",
+            ]
+        ].values
+
+        self.y = self.df[
+            [
+                "MgenjetAK8_pt",
+                "MgenjetAK8_phi",
+                "MgenjetAK8_eta",
+                "MgenjetAK8_hadronFlavour",
+                "MgenjetAK8_partonFlavour",
+                "MgenjetAK8_mass",
+                "MgenjetAK8_ncFlavour",
+                "MgenjetAK8_nbFlavour",
+                "Mhas_H_within_0_8",
+                "is_signal",
+            ]
+        ].values
+
+    def get_dataset(self):
+        return self.X, self.Y
+    
+    def postprocess(self, X, Y):
+        # sum X eta, phi and Y eta, phi
+        X[:, 1] = X[:, 1] + Y[:, 2]
+        X[:, 2] = X[:, 2] + Y[:, 1]
+
+        # multpily X pt, msoftdrop and Y pt, mass
+        X[:, 0] = X[:, 0] * Y[:, 0]
+        X[:, 3] = X[:, 3] * Y[:, 5]
+
+        # where softdrom < 0, put -10
+        X[:, 3] = np.where(X[:, 3] < 0, -10, X[:, 3])
+
+        return X

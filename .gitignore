@@ -176,3 +176,6 @@ cython_debug/
 
 *.cudawn10
 
+runs/
+checkpoints/
+

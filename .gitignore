@@ -171,3 +171,8 @@ cython_debug/
 *.hdf5
 *.root
 
+*.pdf
+*.png
+
+*.cudawn10
+
